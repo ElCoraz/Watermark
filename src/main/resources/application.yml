@@ -58,6 +58,7 @@ spring:
 #httpOnly: if true then browser script won't be able to access the cookie
 #secure: if true then the cookie will be sent only over HTTPS connection
 server:
+  port: 9090
   servlet:
     session:
       cookie:

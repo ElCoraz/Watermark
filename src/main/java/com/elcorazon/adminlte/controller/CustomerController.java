@@ -10,10 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 //**********************************************************************************************************************
 @Controller
@@ -27,17 +24,17 @@ public class CustomerController {
         this.customerService = customerService;
     }
     //******************************************************************************************************************
-    @GetMapping
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
         return "redirect:/customers/1";
     }
     //******************************************************************************************************************
-    @GetMapping(value = "/customers")
+    @RequestMapping(value = "/customers", method = RequestMethod.GET)
     public String customers() {
         return "redirect:/customers/1";
     }
     //******************************************************************************************************************
-    @GetMapping(value = "/{id}")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String list(@PathVariable Integer id, Model model) {
         Page<Customers> page = customerService.getList(id);
 
@@ -56,13 +53,13 @@ public class CustomerController {
         return "customers/list";
     }
     //******************************************************************************************************************
-    @GetMapping("/add")
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
     public String add(Model model) {
         model.addAttribute("customer", new Customers());
         return "customers/form";
     }
     //******************************************************************************************************************
-    @GetMapping("/edit/{id}")
+    @RequestMapping(value = "//edit/{id}", method = RequestMethod.GET)
     public String edit(@PathVariable Long id, Model model) {
         model.addAttribute("customer", customerService.get(id));
         model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
@@ -70,14 +67,14 @@ public class CustomerController {
         return "customers/form";
     }
     //******************************************************************************************************************
-    @PostMapping(value = "/save")
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String save(Customers customer, final RedirectAttributes ra) {
         Customers save = customerService.save(customer);
         ra.addFlashAttribute("successFlash", "Cliente foi salvo com sucesso.");
         return "redirect:/customers";
     }
     //******************************************************************************************************************
-    @GetMapping("/delete/{id}")
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable Long id) {
         customerService.delete(id);
         return "redirect:/customers";
