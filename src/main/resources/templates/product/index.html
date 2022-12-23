@@ -1,0 +1,111 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="" layout:decorate="layout" lang="">
+<head>
+    <title>Продукция</title>
+</head>
+<body>
+
+<div layout:fragment="content-header">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1 class="m-0">Продукция</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div layout:fragment="content">
+    <div id="loader">
+        <div class="cv-spinner">
+            <span class="spinner"></span>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="box-body no-padding">
+                    <!-- ------------------------------------------------------------------------------------------- -->
+                    <div class='row'>
+                        <div class='col-sm-12' style='padding: 10px'>
+                            <div class='input-group'>
+                                <input placeholder='Введите строку поиска...' type='text' class='form-control' id='search_text'/>
+                                <button style="border: solid 0" id='search'><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ------------------------------------------------------------------------------------------- -->
+                    <div class='row'>
+                        <div class='col-sm-4'>
+                            <h2>Номенклатура</h2>
+                            <div id='treeview' class='treeview'></div>
+                        </div>
+                        <div class='col-sm-8'>
+                            <h2>Элементы</h2>
+                            <div id='table'></div>
+                        </div>
+                    </div>
+                    <!-- ------------------------------------------------------------------------------------------- -->
+                </div>
+                <!-- ----------------------------------------------------------------------------------------------- -->
+            </div>
+            </div>
+        </div>
+        <th:block layout:fragment="script">
+            <script>
+                /*<![CDATA[*/
+                $(document).ready(function(){
+                    /** ***********************************************************************************************/
+                    $("#loader").fadeOut(300);
+                    /** ***********************************************************************************************/
+                    $('#treeview').treeview({
+                        data: [(${data})]
+                    });
+                    /** ***********************************************************************************************/
+                    $('#treeview').on('nodeSelected', function (event, node) {
+                        $.ajax({
+                            beforeSend: function() {
+                                $("#loader").fadeIn(300);
+                            },
+                            complete: function() {
+                                setTimeout(function(){
+                                    $("#loader").fadeOut(300);
+                                }, 500);
+                            },
+                            method: 'POST',
+                            url: '/api/table/' + node.id
+                        })
+                        .done(function(data) {
+                            $('#table').html(data);
+                        });
+                    });
+                    /** ***********************************************************************************************/
+                    $('#search').click(function() {
+                        $.ajax({
+                            beforeSend: function() {
+                                $("#loader").fadeIn(300);
+                            },
+                            complete: function() {
+                                setTimeout(function(){
+                                    $("#loader").fadeOut(300);
+                                }, 500);
+                            },
+                            method: 'POST',
+                            url: '/api/search/' + $('#search_text').val()
+                        })
+                        .done(function(data) {
+                            $('#table').html(data);
+                        });
+                    });
+                    /** ***********************************************************************************************/
+                });
+                /*]]>*/
+            </script>
+        </th:block>
+    </div>
+</div>
+
+</body>
+</html>

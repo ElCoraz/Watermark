@@ -1,0 +1,240 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="" layout:decorate="layout" lang="">
+<head>
+    <title>Продукция</title>
+</head>
+<body>
+
+<div layout:fragment="content-header">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1 class="m-0">Продукция</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div layout:fragment="content">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                    <h3 class="card-title" th:utext="'<b>' + ${settings.name} + '</b> (' + ${settings.uuid} + ')'"></h3>
+                    <div class="row">
+                        <button type="button" class="btn btn-primary">Удалить</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="box-body no-padding">
+                    <div class="row">
+                        <div class="col-6">
+                            <img id="img" style="border: solid 3px;" th:src="'data:image/png;base64,' + ${image}" alt="">
+                            <input type="hidden" id="uuid" th:value="${settings.uuid}">
+                            <input type="hidden" id="width" th:value="${settings.width}">
+                            <input type="hidden" id="height" th:value="${settings.height}">
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <b>Задний фон</b>
+                                    <tr th:each="watermark: ${watermarks_bottom}">
+                                        <div class="form-check">
+                                            <input class="form-check-input bottom" style="margin-left: -15px;" type="checkbox" value="" th:id="${watermark.uuid}" th:checked="${watermark.checked}">
+                                            <label class="form-check-label" th:for="${watermark.uuid}" th:text="${watermark.name}"></label>
+                                        </div>
+                                    </tr>
+                                </div>
+                                <div class="col-6">
+                                    <b>Передний фон</b>
+                                    <tr th:each="watermark: ${watermarks_top}">
+                                        <div class="form-check">
+                                            <input class="form-check-input top" style="margin-left: -15px;" type="checkbox" value="" th:id="${watermark.uuid}" th:checked="${watermark.checked}">
+                                            <label class="form-check-label" th:for="${watermark.uuid}" th:text="${watermark.name}"></label>
+                                        </div>
+                                    </tr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <tr th:each="image: ${images}">
+                                <a href="#" th:text="${image}"></a>&nbsp;
+                            </tr>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <tr th:if="${show_watermarks_bottom}">
+                                <div class="row" id="bottom_panel">
+                                    <b>Задний фон</b>
+                                    <div class="col-12">
+                                        <label for="height_back">Высота</label>
+                                        <input type="range" min="1" th:max=${settings.height} id="height_back" th:value=${settings.bottom.height}>
+                                        <label for="width_back">Ширина</label>
+                                        <input type="range" min="1" th:max=${settings.width} id="width_back" th:value=${settings.bottom.width}>
+                                        <label for="alpha_back">Прозрачность</label>
+                                        <input type="range" min="0" max="1" id="alpha_back" step="0.1" th:value=${settings.bottom.alpha}>
+                                        <label for="scale_back">Размер</label>
+                                        <input type="range" min="0" max="1000" id="scale_back" step="1" th:value=${settings.bottom.scale}>
+                                        <input type="hidden" id="uuid_back" th:value="${settings.bottom.uuid}">
+                                    </div>
+                                </div>
+                            </tr>
+                        </div>
+                        <div class="col-6">
+                            <tr th:if="${show_watermarks_top}">
+                                <div class="row" id="top_panel">
+                                    <b>Передний фон</b>
+                                    <div class="col-12">
+                                        <label for="height_top">Высота</label>
+                                        <input type="range" min="1" th:max=${settings.height} id="height_top" th:value=${settings.top.height}>
+                                        <label for="width_top">Ширина</label>
+                                        <input type="range" min="1" th:max=${settings.width} id="width_top" th:value=${settings.top.height}>
+                                        <label for="alpha_top">Прозрачность</label>
+                                        <input type="range" min="0" max="1" id="alpha_top" step="0.1" th:value=${settings.top.alpha}>
+                                        <label for="scale_top">Размер</label>
+                                        <input type="range" min="0" max="1000" id="scale_top" step="1" th:value=${settings.top.scale}>
+                                        <input type="hidden" id="uuid_top" th:value="${settings.top.uuid}">
+                                    </div>
+                                </div>
+                            </tr>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div>
+                        <form method="POST" enctype="multipart/form-data" th:action="'/product/upload/' + ${settings.uuid}">
+                            <b>Загрузка изображения</b>
+                            <div class="row">
+                                <div class="col-11">
+                            <div class="form-group">
+                                <input type="file" name="file" />
+                            </div>
+                                </div>
+                                <div class="col-1">
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-primary" value="Загрузить" />
+                            </div></div></div>
+                        </form>
+                    </div>
+
+                    <div>
+                        <ul>
+                            <li th:each="file : ${files}">
+                                <a th:href="${file}" th:text="${file}"></a>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                    <div class="box-footer clearfix">
+                    </div>
+
+                    <th:block layout:fragment="script">
+                        <script>
+                            /*<![CDATA[*/
+                            $(document).ready(function(){
+                                /** ************************************************************************************/
+                                function getID(className) {
+                                    let objects = $("." + className);
+                                    for (let i = 0; i < objects.length; i++) {
+                                        if (objects[i].checked) {
+                                            return objects[i].id;
+                                        }
+                                    }
+                                    return "";
+                                }
+                                /** ***********************************************************************************/
+                                function update() {
+                                    $.ajax({
+                                        url: "/api/merge",
+                                        method: "POST",
+                                        data: JSON.stringify({
+                                            uuid:$('#uuid').val(),
+                                            width: $('#width').val(),
+                                            height: $('#height').val(),
+                                            bottom: {
+                                                uuid: getID("bottom"),
+                                                scale: parseInt($('#scale_back').val()),
+                                                alpha: parseFloat($('#alpha_back').val()),
+                                                width: parseInt($('#width_back').val()),
+                                                height: parseInt($('#height_back').val())
+                                            },
+                                            top: {
+                                                uuid: getID("top"),
+                                                scale: parseInt($('#scale_top').val()),
+                                                alpha: parseFloat($('#alpha_top').val()),
+                                                width: parseInt($('#width_top').val()),
+                                                height: parseInt($('#height_top').val())
+                                            }
+                                        }),
+                                        contentType: "application/json; charset=utf-8"
+                                    })
+                                        .done(function (data) {
+                                            $('#img').attr('src', "data:image/png;base64," + data);
+                                        });
+                                }
+                                /** ***********************************************************************************/
+                                function show(className) {
+                                    let show = false;
+                                    let objects = $("." + className);
+                                    for (let i = 0; i < objects.length; i++) {
+                                        if (objects[i].checked) {
+                                            show = objects[i].checked;
+                                            break;
+                                        }
+                                    }
+                                    if (show) {
+                                        $('#' + className + '_panel').show();
+                                    } else {
+                                        $('#' + className + '_panel').hide();
+                                    }
+                                }
+                                /** ***********************************************************************************/
+                                $("input[type='checkbox']").on("click", function() {
+                                    let id = this.id;
+                                    let checked = this.checked;
+                                    let className = this.className.replace("form-check-input", "").trim();
+
+                                    let objects = $("." + className);
+
+                                    for (let i = 0; i < objects.length; i++) {
+                                        if (objects[i].checked && (objects[i].id !== id)) {
+                                            objects[i].checked = !checked;
+                                        }
+                                    }
+
+                                    update();
+
+                                    show(className);
+
+                                    location.reload();
+                                });
+                                /** ***********************************************************************************/
+                                $("input[type='range']").on("input", function() {
+                                    update();
+                                });
+                                /** ***********************************************************************************/
+                            });
+                            /*]]>*/
+                        </script>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

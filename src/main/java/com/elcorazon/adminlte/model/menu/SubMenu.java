@@ -1,14 +1,15 @@
-package com.elcorazon.adminlte.utils;
+package com.elcorazon.adminlte.model.menu;
 
-import org.springframework.security.core.Authentication;
 /**********************************************************************************************************************/
-public class User {
+public class SubMenu {
     /******************************************************************************************************************/
-    public String id;
     public String name;
+    public String link;
+    public String icon;
     /******************************************************************************************************************/
-    public User(Authentication authentication) {
-        id = authentication.getName();
-        name = authentication.getName();
+    public SubMenu(String _name, String _link, String _icon) {
+        name = _name;
+        link = _link;
+        icon = _icon;
     }
 }

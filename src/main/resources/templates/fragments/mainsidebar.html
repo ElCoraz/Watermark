@@ -5,14 +5,15 @@
 <div th:fragment="mainsidebar">
     <aside class="main-sidebar sidebar-dark-primary elevation-4" xmlns:th="http://www.w3.org/1999/xhtml">
         <a href="/" class="brand-link">
-            <img src="/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+            <img src="/dist/img/AdminLTELogo.png" alt="Logo" class="brand-image img-circle elevation-3"
                  style="opacity: .8">
-            <span class="brand-text font-weight-light">AdminLTE 3</span>
+            <span class="brand-text font-weight-light">Watermark</span>
         </a>
         <div class="sidebar">
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
-                    <img src="/dist/img/user.png" style="background: white" class="img-circle elevation-2" alt="User Image">
+                    <img src="/dist/img/user.png" style="background: white" class="img-circle elevation-2"
+                         alt="User Image">
                 </div>
                 <div class="info">
                     <a th:href="@{'/user?id=' + ${user.id}}" class="d-block" th:text="${user.name}"></a>
@@ -20,12 +21,22 @@
             </div>
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                    data-accordion="false" th:each="row : ${menu}">
-                    <li class="nav-item">
+                    data-accordion="false">
+                    <li class="nav-item" th:each="row : ${menu}">
                         <a th:href="${row.link}" class="nav-link">
                             <i th:class="${row.icon}"></i>
-                            <p th:text="${row.name}"></p>
+                            <p>
+                                <th:block th:utext="${row.name}"/>
+                                <i th:if="${row.subMenu != null}" class='right fas fa-angle-left'></i></p>
                         </a>
+                        <ul class="nav nav-treeview" th:if="${row.subMenu != null}" th:style="'display: none;'">
+                            <li class="nav-item" th:each="rowSubMenu : ${row.subMenu}">
+                                <a th:href="${rowSubMenu.link}" class="nav-link">
+                                    <i th:class="${rowSubMenu.icon}"></i>
+                                    <p th:text="${rowSubMenu.name}"></p>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </nav>
