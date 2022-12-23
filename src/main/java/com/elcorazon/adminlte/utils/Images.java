@@ -3,6 +3,8 @@ package com.elcorazon.adminlte.utils;
 import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.Watermark;
+import com.elcorazon.adminlte.repository.WatermarkRepository;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Base64Utils;
 
 import javax.imageio.ImageIO;
@@ -21,6 +23,16 @@ public class Images {
     /******************************************************************************************************************/
     public static Path path = Paths.get("").toAbsolutePath();
     /******************************************************************************************************************/
+    private static  Environment current_environment;
+    /******************************************************************************************************************/
+    public Images(Environment environment) {
+        current_environment =  environment;
+    }
+    /******************************************************************************************************************/
+    public static void setEnvironment(Environment environment) {
+        current_environment =  environment;
+    }
+    /******************************************************************************************************************/
     private static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
 
         BufferedImage bufferedImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
@@ -35,7 +47,7 @@ public class Images {
     }
     /******************************************************************************************************************/
     public static String getPath() {
-        return path + "\\src\\main\\resources\\static\\images\\";
+        return path + (new com.elcorazon.adminlte.model.Settings().path);
     }
     /******************************************************************************************************************/
     public static BufferedImage getWatermark(Layer layer) throws IOException {
@@ -43,7 +55,7 @@ public class Images {
             return null;
         }
 
-        BufferedImage bufferedImage = ImageIO.read(new File(path + "\\src\\main\\resources\\static\\images\\watermarks\\" + layer.uuid + ".png"));
+        BufferedImage bufferedImage = ImageIO.read(new File(path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + layer.uuid + ".png"));
 
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
@@ -95,22 +107,22 @@ public class Images {
     /******************************************************************************************************************/
     public static BufferedImage loadImage(String uuid, Boolean isWatermark) throws IOException {
         if (isWatermark) {
-            return ImageIO.read(new File( Images.path + "\\src\\main\\resources\\static\\images\\watermarks\\" + uuid + ".png"));
+            return ImageIO.read(new File( Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
         }
 
-        return ImageIO.read(new File( Images.path + "\\src\\main\\resources\\static\\images\\" + uuid + ".png"));
+        return ImageIO.read(new File( Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
     }
     /******************************************************************************************************************/
     public static Settings getSettings(String id, String top_id, String bottom_id) throws IOException {
         Settings settings = new Settings();
 
         try {
-            settings.image = ImageIO.read(new File(Images.path + "\\src\\main\\resources\\static\\images\\" + id + ".png"));
+            settings.image = ImageIO.read(new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + id + ".png"));
 
             settings.width = settings.image.getWidth();
             settings.height = settings.image.getHeight();
         } catch (Exception e) {
-            settings.image = ImageIO.read(new File(Images.path + "\\src\\main\\resources\\static\\images\\none.png"));
+            settings.image = ImageIO.read(new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
 
             settings.width = settings.image.getWidth();
             settings.height = settings.image.getHeight();
@@ -149,9 +161,9 @@ public class Images {
     public static Settings appendSettings(Settings settings) throws IOException {
 
         try {
-            settings.image = ImageIO.read(new File( Images.path + "\\src\\main\\resources\\static\\images\\" + settings.uuid + ".png"));
+            settings.image = ImageIO.read(new File( Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + settings.uuid + ".png"));
         } catch (Exception e) {
-            settings.image = ImageIO.read(new File(Images.path + "\\src\\main\\resources\\static\\images\\none.png"));
+            settings.image = ImageIO.read(new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
         }
 
         BufferedImage top = getWatermark(settings.top);
@@ -201,13 +213,14 @@ public class Images {
         return settings;
     }
     /******************************************************************************************************************/
-    public static List<Watermark> getWatermarks() {
+    public static List<Watermark> getWatermarks(WatermarkRepository watermarkRepository) {
+        List<com.elcorazon.adminlte.model.database.Watermark> watermarks = watermarkRepository.findAll();
+
         List<Watermark> list = new ArrayList<>();
 
-        list.add(new Watermark("ef95591c-8031-11ed-a1eb-0242ac120002", "Изображение 1", false));
-        list.add(new Watermark("8fb51c8c-2867-4c03-8f1f-6c67daa70b64", "Изображение 2", false));
-        list.add(new Watermark("ef955638-8031-11ed-a1eb-0242ac120002", "Изображение 3", false));
-        list.add(new Watermark("04140c6c-712e-4506-852d-c5cc23f07341", "Изображение 4", false));
+        for (com.elcorazon.adminlte.model.database.Watermark watermark: watermarks) {
+            list.add(new Watermark(watermark.uuid, watermark.name, false));
+        }
 
         return list;
     }

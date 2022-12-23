@@ -11,6 +11,7 @@ public class MenuCreate {
         List<Menu> menu = new ArrayList<Menu>();
 
         menu.add(new Menu("Продукция", "/product", "far fa-circle nav-icon", null));
+        menu.add(new Menu("Водяные знаки", "/watermark", "far fa-circle nav-icon", null));
         menu.add(new Menu("Шаблоны", "/template", "far fa-circle nav-icon", null));
 
         return menu;

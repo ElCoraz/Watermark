@@ -13,4 +13,6 @@ public class Settings {
     /******************************************************************************************************************/
     @JsonProperty("path")
     public String path;
+    @JsonProperty("watermark")
+    public String watermark;
 }

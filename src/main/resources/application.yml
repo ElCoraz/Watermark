@@ -71,3 +71,8 @@ cookie:
 
 #hendisantika/password
 #admin/password
+
+settings:
+  file:
+    name: settings/settings.json
+  version: 1.0.0

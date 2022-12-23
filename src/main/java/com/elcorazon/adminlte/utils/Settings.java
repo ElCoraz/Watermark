@@ -26,6 +26,10 @@ public class Settings {
         return this.settings.path;
     }
     /******************************************************************************************************************/
+    public String getWatermark() {
+        return this.settings.watermark;
+    }
+    /******************************************************************************************************************/
     public String getVersion() {
         return environment.getProperty("settings.version");
     }

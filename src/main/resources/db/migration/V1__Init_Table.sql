@@ -32,6 +32,7 @@ CREATE TABLE watermark
     id  VARCHAR(50) NOT NULL,
     url VARCHAR(255) NOT NULL,
     uuid VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     value VARCHAR(255) NOT NULL,
     template VARCHAR(255) NOT NULL
 ) ENGINE = InnoDb;

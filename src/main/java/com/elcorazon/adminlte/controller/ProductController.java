@@ -4,11 +4,14 @@ import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.save.SettingsSave;
 import com.elcorazon.adminlte.model.settings.Watermark;
+import com.elcorazon.adminlte.repository.WatermarkRepository;
 import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.Query;
 import com.elcorazon.adminlte.utils.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -29,6 +32,12 @@ import java.util.List;
 @Controller
 public class ProductController {
     /******************************************************************************************************************/
+    @Autowired
+    private WatermarkRepository watermarkRepository;
+    /******************************************************************************************************************/
+    @Autowired
+    private Environment environment;
+    /******************************************************************************************************************/
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String root() {
         return "redirect:/product";
@@ -48,8 +57,11 @@ public class ProductController {
     /******************************************************************************************************************/
     @RequestMapping(value = "/product/{id}", method = RequestMethod.GET)
     public String position(Model model, @PathVariable String id) throws IOException {
-        List<Watermark> watermarks_top = Images.getWatermarks();
-        List<Watermark> watermarks_bottom = Images.getWatermarks();
+
+        Images.setEnvironment(environment);
+
+        List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
+        List<Watermark> watermarks_bottom = Images.getWatermarks(watermarkRepository);
 
         Settings settings = Images.getSettings(id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
 

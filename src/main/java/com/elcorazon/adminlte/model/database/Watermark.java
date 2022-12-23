@@ -22,6 +22,8 @@ public class Watermark {
     @Column(nullable = false)
     public String url;
     @Column(nullable = false)
+    public String name;
+    @Column(nullable = false)
     public String uuid;
     @Column(nullable = false)
     public String value;
