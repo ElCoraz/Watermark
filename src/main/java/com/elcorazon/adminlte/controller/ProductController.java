@@ -22,7 +22,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -130,11 +129,19 @@ public class ProductController {
 
         ArrayList images = new ArrayList();
 
-        images.add("1");
-        images.add("2");
-        images.add("3");
-        images.add("4");
-        images.add("5");
+        if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
+            Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+        } else {
+            File[] listOfFiles = (new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+
+            if (listOfFiles != null) {
+                for (File file : listOfFiles) {
+                    if (file.isFile()) {
+                        images.add(file.getName());
+                    }
+                }
+            }
+        }
 
         model.addAttribute("images", images);
 
@@ -143,22 +150,13 @@ public class ProductController {
 
     /******************************************************************************************************************/
     @RequestMapping(value = "/product/upload/{id}", method = RequestMethod.POST)
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) {
-        try {
-            if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
-                Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
-            }
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) throws IOException {
 
-            File fileTemp = new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id + "\\" + id + ".png");
-
-            Files.copy(file.getInputStream(), fileTemp.toPath());
-        } catch (Exception e) {
-            if (e instanceof FileAlreadyExistsException) {
-                throw new RuntimeException("A file of that name already exists.");
-            }
-
-            throw new RuntimeException(e.getMessage());
+        if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
+            Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
         }
+
+        Files.copy(file.getInputStream(), (new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id + "\\" + id + ".png")).toPath());
 
         return "redirect:/product/" + id;
     }
