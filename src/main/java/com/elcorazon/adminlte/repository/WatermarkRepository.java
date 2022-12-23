@@ -5,10 +5,13 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**********************************************************************************************************************/
 @Repository
 public interface WatermarkRepository extends PagingAndSortingRepository<Watermark, String> {
     @Override
     List<Watermark> findAll();
+
+    Optional<Watermark> findById(String id);
 }

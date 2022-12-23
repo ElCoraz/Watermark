@@ -151,7 +151,6 @@ public class ProductController {
     /******************************************************************************************************************/
     @RequestMapping(value = "/product/upload/{id}", method = RequestMethod.POST)
     public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) throws IOException {
-
         if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
             Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
         }
