@@ -1,4 +1,4 @@
-package com.elcorazon.adminlte.model;
+package com.elcorazon.adminlte.model.settings;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -2,7 +2,7 @@ package com.elcorazon.adminlte.utils;
 
 import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
-import com.elcorazon.adminlte.model.Watermark;
+import com.elcorazon.adminlte.model.settings.Watermark;
 import org.springframework.util.Base64Utils;
 
 import javax.imageio.ImageIO;

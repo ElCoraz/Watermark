@@ -3,7 +3,7 @@ package com.elcorazon.adminlte.controller;
 import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.save.SettingsSave;
-import com.elcorazon.adminlte.model.Watermark;
+import com.elcorazon.adminlte.model.settings.Watermark;
 import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.Query;
