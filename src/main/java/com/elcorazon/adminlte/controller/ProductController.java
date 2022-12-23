@@ -145,11 +145,11 @@ public class ProductController {
     @RequestMapping(value = "/product/upload/{id}", method = RequestMethod.POST)
     public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) {
         try {
-            if (!Files.isDirectory(Paths.get(Images.path + "\\src\\main\\resources\\static\\images\\" + id))) {
-                Files.createDirectories(Paths.get(Images.path + "\\src\\main\\resources\\static\\images\\" + id));
+            if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
+                Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
             }
 
-            File fileTemp = new File(Images.path + "\\src\\main\\resources\\static\\images\\" + id + "\\" + id + ".png");
+            File fileTemp = new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id + "\\" + id + ".png");
 
             Files.copy(file.getInputStream(), fileTemp.toPath());
         } catch (Exception e) {
