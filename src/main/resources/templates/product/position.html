@@ -40,15 +40,17 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-12">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle w-100 text-left" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Выберите шаблон
-                                    </button>
-                                    <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" >
-                                        <a class="dropdown-item w-100" href="#" th:each="template: ${templates}" th:id="${template.id}" th:text="${template.name}"></a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle w-100 text-left" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Выберите шаблон
+                                        </button>
+                                        <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" >
+                                            <a class="dropdown-item w-100" href="#" th:each="template: ${templates}" th:id="${template.id}" th:text="${template.name}"></a>
+                                        </div>
                                     </div>
-                                </div></div>
+                                </div>
                             </div>
+                            <hr/>
                             <div class="row">
                                 <div class="col-6">
                                     <b>Задний фон</b>
