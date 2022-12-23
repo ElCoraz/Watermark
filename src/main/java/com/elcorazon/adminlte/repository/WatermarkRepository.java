@@ -13,5 +13,6 @@ public interface WatermarkRepository extends PagingAndSortingRepository<Watermar
     @Override
     List<Watermark> findAll();
 
+    @Override
     Optional<Watermark> findById(String id);
 }

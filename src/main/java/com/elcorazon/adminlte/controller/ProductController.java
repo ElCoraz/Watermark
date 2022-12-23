@@ -4,6 +4,7 @@ import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.save.SettingsSave;
 import com.elcorazon.adminlte.model.settings.Watermark;
+import com.elcorazon.adminlte.repository.TemplateRepository;
 import com.elcorazon.adminlte.repository.WatermarkRepository;
 import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
@@ -33,6 +34,9 @@ public class ProductController {
     /******************************************************************************************************************/
     @Autowired
     private WatermarkRepository watermarkRepository;
+    /******************************************************************************************************************/
+    @Autowired
+    private TemplateRepository templateRepository;
     /******************************************************************************************************************/
     @Autowired
     private Environment environment;
@@ -121,6 +125,7 @@ public class ProductController {
         settings.name = getName(settings.uuid);
 
         model.addAttribute("settings", settings);
+        model.addAttribute("templates", templateRepository.findAll());
 
         model.addAttribute("watermarks_top", watermarks_top);
         model.addAttribute("watermarks_bottom", watermarks_bottom);
