@@ -9,6 +9,7 @@ import java.util.List;
 /**********************************************************************************************************************/
 @Repository
 public interface TemplateRepository extends PagingAndSortingRepository<Template, String> {
+    /******************************************************************************************************************/
     @Override
     List<Template> findAll();
 }

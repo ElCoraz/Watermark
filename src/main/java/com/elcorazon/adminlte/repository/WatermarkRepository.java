@@ -10,9 +10,11 @@ import java.util.Optional;
 /**********************************************************************************************************************/
 @Repository
 public interface WatermarkRepository extends PagingAndSortingRepository<Watermark, String> {
+    /******************************************************************************************************************/
     @Override
     List<Watermark> findAll();
 
+    /******************************************************************************************************************/
     @Override
     Optional<Watermark> findById(String id);
 }
