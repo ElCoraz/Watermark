@@ -15,7 +15,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -121,10 +120,9 @@ public class ApiController {
                     .body((new ByteArrayOutputStream()).toByteArray());
         }
 
-        BufferedImage bufferedImage = Images.mergeImage(settings);
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage , "png", byteArrayOutputStream);
+
+        ImageIO.write(Images.mergeImage(settings) , "png", byteArrayOutputStream);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image.png\"")
