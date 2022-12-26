@@ -1,11 +1,12 @@
 package com.elcorazon.adminlte.controller;
 
+import com.elcorazon.adminlte.model.Image;
 import com.elcorazon.adminlte.model.database.Template;
+import com.elcorazon.adminlte.model.settings.Watermark;
 import com.elcorazon.adminlte.model.settings.main.Layer;
-import com.elcorazon.adminlte.model.settings.save.LayerSave;
 import com.elcorazon.adminlte.model.settings.main.Settings;
-import com.elcorazon.adminlte.model.settings.save.SettingsSave;
 import com.elcorazon.adminlte.repository.TemplateRepository;
+import com.elcorazon.adminlte.repository.WatermarkRepository;
 import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.Query;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,13 +15,20 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.util.List;
 
 /**********************************************************************************************************************/
 @RestController
 @RequestMapping(path = "/api")
 public class ApiController {
+    /******************************************************************************************************************/
+    @Autowired
+    private WatermarkRepository watermarkRepository;
     /******************************************************************************************************************/
     @Autowired
     private TemplateRepository templateRepository;
@@ -39,7 +47,7 @@ public class ApiController {
 
         Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1");
 
-        save(settings);
+        new com.elcorazon.adminlte.utils.Settings(environment).save(settings);
 
         return ResponseEntity.status(HttpStatus.OK).body(Images.getImage(Images.mergeImage(settings)));
     }
@@ -67,7 +75,7 @@ public class ApiController {
         settings.top = new ObjectMapper().readValue(Template.top, Layer.class);
         settings.bottom = new ObjectMapper().readValue(Template.bottom, Layer.class);
 
-        save(settings);
+        new com.elcorazon.adminlte.utils.Settings(environment).save(settings);
 
         return ResponseEntity.status(HttpStatus.OK).body(Images.getImage(Images.mergeImage(settings)));
     }
@@ -79,33 +87,46 @@ public class ApiController {
     }
 
     /******************************************************************************************************************/
-    private void save(Settings settings) throws IOException {
-        SettingsSave settingsSave = new SettingsSave();
+    @GetMapping(path = "/image/{id}")
+    public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException {
 
-        settingsSave.uuid = settings.uuid;
-        settingsSave.name = settings.name;
-        settingsSave.height = settings.height;
-        settingsSave.width = settings.width;
+        Integer count = 0;
 
-        LayerSave bottom = new LayerSave();
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
 
-        bottom.alpha = settings.bottom.alpha;
-        bottom.height = settings.bottom.height;
-        bottom.scale = settings.bottom.scale;
-        bottom.uuid = settings.bottom.uuid;
-        bottom.width = settings.bottom.width;
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                if (file.isFile() && (file.getName().indexOf(".png") > 0)) {
+                    count++;
+                }
+            }
+        }
 
-        LayerSave top = new LayerSave();
+        return ResponseEntity.status(HttpStatus.OK).body("{\"count\": " + count + " }");
+    }
 
-        top.alpha = settings.top.alpha;
-        top.height = settings.top.height;
-        top.scale = settings.top.scale;
-        top.uuid = settings.top.uuid;
-        top.width = settings.top.width;
+    /******************************************************************************************************************/
+    @GetMapping(path = "/image/{id}/{index}")
+    public ResponseEntity<byte[]> dataImage(@PathVariable String id, @PathVariable String index) throws IOException {
 
-        settingsSave.top = top;
-        settingsSave.bottom = bottom;
+        Images.setEnvironment(environment);
 
-        (new ObjectMapper()).writeValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images\\" + settings.uuid + "\\settings.json").toFile(), settingsSave);
+        List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
+        List<Watermark> watermarks_bottom = Images.getWatermarks(watermarkRepository);
+
+        Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
+
+        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom);
+
+        BufferedImage bufferedImage = Images.mergeImage(settings);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage , "png", byteArrayOutputStream);
+
+        byte[] imageInByte = byteArrayOutputStream.toByteArray();
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image.png\"")
+                        .contentType(MediaType.IMAGE_PNG)
+                        .body(imageInByte);
     }
 }

@@ -1,9 +1,7 @@
 package com.elcorazon.adminlte.controller;
 
 import com.elcorazon.adminlte.model.Image;
-import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
-import com.elcorazon.adminlte.model.settings.save.SettingsSave;
 import com.elcorazon.adminlte.model.settings.Watermark;
 import com.elcorazon.adminlte.repository.TemplateRepository;
 import com.elcorazon.adminlte.repository.WatermarkRepository;
@@ -11,7 +9,6 @@ import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.Query;
 import com.elcorazon.adminlte.utils.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
@@ -42,6 +39,7 @@ public class ProductController {
     /******************************************************************************************************************/
     @Autowired
     private Environment environment;
+
     /******************************************************************************************************************/
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String root() {
@@ -69,7 +67,7 @@ public class ProductController {
 
         Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
 
-        settings = load(settings, index, watermarks_top, watermarks_bottom);
+        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom);
 
         model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
         model.addAttribute("menu", MenuCreate.getMenu());
@@ -103,8 +101,8 @@ public class ProductController {
 
                         i++;
                     }
+                }
             }
-        }
         }
 
         model.addAttribute("images", images);
@@ -155,55 +153,5 @@ public class ProductController {
         }
 
         return 0;
-    }
-    /******************************************************************************************************************/
-    private Settings load(Settings settings, String i, List<Watermark> watermarks_top, List<Watermark> watermarks_bottom) throws IOException {
-        try {
-            SettingsSave settingsSave = (new ObjectMapper()).readValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images\\" + settings.uuid + "\\settings.json").toFile(), SettingsSave.class);
-
-            settings = new Settings();
-
-            Layer bottom = new Layer();
-
-            bottom.uuid = settingsSave.bottom.uuid;
-            bottom.alpha = settingsSave.bottom.alpha;
-            bottom.scale = settingsSave.bottom.scale;
-            bottom.width = settingsSave.bottom.width;
-            bottom.height = settingsSave.bottom.height;
-
-            bottom.image = Images.getWatermark(bottom);
-
-            settings.bottom = bottom;
-
-            Layer top = new Layer();
-
-            top.uuid = settingsSave.top.uuid;
-            top.alpha = settingsSave.top.alpha;
-            top.scale = settingsSave.top.scale;
-            top.width = settingsSave.top.width;
-            top.height = settingsSave.top.height;
-
-            top.image = Images.getWatermark(top);
-
-            settings.top = top;
-
-            settings.uuid = settingsSave.uuid;
-            settings.name = settingsSave.name;
-            settings.width = settingsSave.width;
-            settings.height = settingsSave.height;
-
-            settings.image = Images.loadImage(i, settings.uuid, false);
-
-            for (Watermark watermark : watermarks_top) {
-                watermark.checked = watermark.uuid.equals(top.uuid);
-            }
-
-            for (Watermark watermark : watermarks_bottom) {
-                watermark.checked = watermark.uuid.equals(bottom.uuid);
-            }
-        } catch (Exception ignored) {
-
-        }
-        return Images.appendSettings(settings, i);
     }
 }
