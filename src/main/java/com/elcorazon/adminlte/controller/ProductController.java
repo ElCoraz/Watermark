@@ -59,7 +59,7 @@ public class ProductController {
 
     /******************************************************************************************************************/
     @RequestMapping(value = "/product/{id}/{index}", method = RequestMethod.GET)
-    public String position(Model model, @PathVariable String id, @PathVariable String index) throws IOException {
+    public String position(Model model, @PathVariable String id, @PathVariable String index) throws Exception {
         Images.setEnvironment(environment);
 
         List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
@@ -67,7 +67,7 @@ public class ProductController {
 
         Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
 
-        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom);
+        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, false);
 
         model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
         model.addAttribute("menu", MenuCreate.getMenu());

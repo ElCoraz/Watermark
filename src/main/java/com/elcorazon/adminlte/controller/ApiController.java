@@ -66,7 +66,6 @@ public class ApiController {
     /******************************************************************************************************************/
     @PostMapping(path = "/template/{template}")
     public ResponseEntity<String> search(@RequestBody String body, @PathVariable String template) throws IOException  {
-
         Template Template = templateRepository.findAllById(template);
 
         Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1");
@@ -88,7 +87,6 @@ public class ApiController {
     /******************************************************************************************************************/
     @GetMapping(path = "/image/{id}")
     public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException {
-
         int count = 0;
 
         File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
@@ -106,8 +104,7 @@ public class ApiController {
 
     /******************************************************************************************************************/
     @GetMapping(path = "/image/{id}/{index}")
-    public ResponseEntity<byte[]> dataImage(@PathVariable String id, @PathVariable String index) throws IOException {
-
+    public ResponseEntity<byte[]> dataImage(@PathVariable String id, @PathVariable String index) throws Exception {
         Images.setEnvironment(environment);
 
         List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
@@ -115,17 +112,23 @@ public class ApiController {
 
         Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
 
-        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom);
+        try {
+            settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, true);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image.png\"")
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body((new ByteArrayOutputStream()).toByteArray());
+        }
 
         BufferedImage bufferedImage = Images.mergeImage(settings);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage , "png", byteArrayOutputStream);
 
-        byte[] imageInByte = byteArrayOutputStream.toByteArray();
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image.png\"")
                         .contentType(MediaType.IMAGE_PNG)
-                        .body(imageInByte);
+                        .body(byteArrayOutputStream.toByteArray());
     }
 }
