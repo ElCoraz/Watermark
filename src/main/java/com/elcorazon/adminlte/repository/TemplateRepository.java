@@ -12,4 +12,6 @@ public interface TemplateRepository extends PagingAndSortingRepository<Template,
     /******************************************************************************************************************/
     @Override
     List<Template> findAll();
+    /******************************************************************************************************************/
+    Template findAllById(String id);
 }

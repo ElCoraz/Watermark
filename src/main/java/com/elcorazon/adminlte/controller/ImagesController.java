@@ -43,7 +43,7 @@ public class ImagesController {
     /******************************************************************************************************************/
     @RequestMapping(value = "/image/{id}", method = RequestMethod.GET)
     public String image(Model model, @PathVariable String id) throws IOException {
-        List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
+        /*List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
         List<Watermark> watermarks_bottom = Images.getWatermarks(watermarkRepository);
 
         Settings settings = Images.getSettings(id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
@@ -103,8 +103,8 @@ public class ImagesController {
 
         model.addAttribute("watermarks_top", watermarks_top);
         model.addAttribute("watermarks_bottom", watermarks_bottom);
-        model.addAttribute("show_watermarks_top", Images.haveWatemark(watermarks_top));
-        model.addAttribute("show_watermarks_bottom", Images.haveWatemark(watermarks_bottom));
+        model.addAttribute("show_watermarks_top", Images.haveWatermark(watermarks_top));
+        model.addAttribute("show_watermarks_bottom", Images.haveWatermark(watermarks_bottom));*/
 
         return "images/image";
     }

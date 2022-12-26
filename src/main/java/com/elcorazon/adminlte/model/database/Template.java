@@ -21,5 +21,7 @@ public class Template {
     @Column(nullable = false)
     public String name;
     @Column(nullable = false)
-    public String value;
+    public String top;
+    @Column(nullable = false)
+    public String bottom;
 }

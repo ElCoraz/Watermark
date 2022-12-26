@@ -24,7 +24,7 @@
                 <div class="d-flex justify-content-between">
                     <h3 class="card-title" th:utext="'<b>' + ${settings.name} + '</b> (' + ${settings.uuid} + ')'"></h3>
                     <div class="row">
-                        <button type="button" class="btn btn-primary">Удалить</button>
+                        <a class="btn btn-primary" th:href="@{'/product/delete/' + ${settings.uuid}}" role="button">Удалить</a>
                     </div>
                 </div>
             </div>
@@ -34,6 +34,7 @@
                         <div class="col-6">
                             <img id="img" style="border: solid 3px;" th:src="'data:image/png;base64,' + ${image}" alt="">
                             <input type="hidden" id="uuid" th:value="${settings.uuid}">
+                            <input type="hidden" id="index" th:value="${index}">
                             <input type="hidden" id="width" th:value="${settings.width}">
                             <input type="hidden" id="height" th:value="${settings.height}">
                         </div>
@@ -74,12 +75,12 @@
                         </div>
                     </div>
 
-                    <hr/>
+                    <hr th:if="${countImages > 0}"/>
 
-                    <div class="row">
+                    <div class="row" th:if="${countImages > 0}">
                         <div class="col-12">
                             <tr th:each="image: ${images}">
-                                <a href="#" th:text="${image}"></a>&nbsp;
+                                <a th:href="'/product/' + ${settings.uuid} + '/' + ${image.index}" th:text="${image.name}"></a>&nbsp;
                             </tr>
                         </div>
                     </div>
@@ -162,6 +163,35 @@
                                 /** ************************************************************************************/
                                 $('.dropdown-item').on("click", function() {
                                     $('.dropdown-toggle').text($(this).text());
+
+                                    $.ajax({
+                                        url: "/api/template/" + $(this).id,
+                                        method: "POST",
+                                        data: JSON.stringify({
+                                            uuid:$('#uuid').val(),
+                                            width: $('#width').val(),
+                                            height: $('#height').val(),
+                                            bottom: {
+                                                uuid: "",
+                                                scale: parseInt($('#scale_back').val()),
+                                                alpha: parseFloat($('#alpha_back').val()),
+                                                width: parseInt($('#width_back').val()),
+                                                height: parseInt($('#height_back').val())
+                                            },
+                                            top: {
+                                                uuid: "",
+                                                scale: parseInt($('#scale_top').val()),
+                                                alpha: parseFloat($('#alpha_top').val()),
+                                                width: parseInt($('#width_top').val()),
+                                                height: parseInt($('#height_top').val())
+                                            }
+                                        }),
+                                        contentType: "application/json; charset=utf-8"
+                                    })
+                                    .done(function (data) {
+                                        $('#img').attr('src', "data:image/png;base64," + data);
+                                    });
+
                                 });
                                 /** ************************************************************************************/
                                 function getID(className) {
@@ -174,7 +204,7 @@
                                     return "";
                                 }
                                 /** ***********************************************************************************/
-                                function update() {
+                                function update(reload, className) {
                                     $.ajax({
                                         url: "/api/merge",
                                         method: "POST",
@@ -199,9 +229,15 @@
                                         }),
                                         contentType: "application/json; charset=utf-8"
                                     })
-                                        .done(function (data) {
+                                    .done(function (data) {
+                                        if (reload) {
+                                            show(className);
+
+                                            location.reload();
+                                        } else {
                                             $('#img').attr('src', "data:image/png;base64," + data);
-                                        });
+                                        }
+                                    });
                                 }
                                 /** ***********************************************************************************/
                                 function show(className) {
@@ -233,15 +269,11 @@
                                         }
                                     }
 
-                                    update();
-
-                                    show(className);
-
-                                    location.reload();
+                                    update(true, className);
                                 });
                                 /** ***********************************************************************************/
                                 $("input[type='range']").on("input", function() {
-                                    update();
+                                    update(false, "");
                                 });
                                 /** ***********************************************************************************/
                             });

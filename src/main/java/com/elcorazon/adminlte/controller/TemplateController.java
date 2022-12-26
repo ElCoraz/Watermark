@@ -1,28 +1,39 @@
 package com.elcorazon.adminlte.controller;
 
 import com.elcorazon.adminlte.model.database.Template;
-import com.elcorazon.adminlte.model.database.Watermark;
 import com.elcorazon.adminlte.repository.TemplateRepository;
-import com.elcorazon.adminlte.repository.WatermarkRepository;
+import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @ApiIgnore
 @Controller
 public class TemplateController {
     /******************************************************************************************************************/
     @Autowired
+    private Environment environment;
+    /******************************************************************************************************************/
+    @Autowired
     private TemplateRepository templateRepository;
+
     /******************************************************************************************************************/
     @RequestMapping(value = "/template", method = RequestMethod.GET)
     public String index(Model model) {
@@ -46,6 +57,7 @@ public class TemplateController {
 
         return "template/template";
     }
+
     /******************************************************************************************************************/
     @RequestMapping(value = "/template/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable String id) {

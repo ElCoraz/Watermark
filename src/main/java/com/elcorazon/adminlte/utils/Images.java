@@ -23,15 +23,18 @@ public class Images {
     /******************************************************************************************************************/
     public static Path path = Paths.get("").toAbsolutePath();
     /******************************************************************************************************************/
-    private static  Environment current_environment;
+    private static Environment current_environment;
+
     /******************************************************************************************************************/
     public Images(Environment environment) {
-        current_environment =  environment;
+        current_environment = environment;
     }
+
     /******************************************************************************************************************/
     public static void setEnvironment(Environment environment) {
-        current_environment =  environment;
+        current_environment = environment;
     }
+
     /******************************************************************************************************************/
     private static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
 
@@ -45,17 +48,19 @@ public class Images {
 
         return bufferedImage;
     }
+
     /******************************************************************************************************************/
     public static String getPath() {
-        return path + (new com.elcorazon.adminlte.model.Settings().path);
+        return path.toString();
     }
+
     /******************************************************************************************************************/
     public static BufferedImage getWatermark(Layer layer) throws IOException {
         if (layer.uuid.equals("")) {
             return null;
         }
 
-        BufferedImage bufferedImage = ImageIO.read(new File(path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + layer.uuid + ".png"));
+        BufferedImage bufferedImage = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + layer.uuid + ".png"));
 
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
@@ -78,6 +83,7 @@ public class Images {
 
         return combined;
     }
+
     /******************************************************************************************************************/
     public static BufferedImage mergeImage(Settings settings) {
 
@@ -85,14 +91,21 @@ public class Images {
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
 
-        graphics2D.drawImage(settings.bottom.image, settings.bottom.width, settings.bottom.height, null);
+        if (settings.bottom.image != null) {
+            graphics2D.drawImage(settings.bottom.image, settings.bottom.width, settings.bottom.height, null);
+        }
+
         graphics2D.drawImage(settings.image, 0, 0, null);
-        graphics2D.drawImage(settings.top.image, settings.top.width, settings.top.height, null);
+
+        if (settings.top.image != null) {
+            graphics2D.drawImage(settings.top.image, settings.top.width, settings.top.height, null);
+        }
 
         graphics2D.dispose();
 
         return bufferedImage;
     }
+
     /******************************************************************************************************************/
     public static String getImage(BufferedImage image) throws IOException {
 
@@ -104,25 +117,27 @@ public class Images {
 
         return Base64Utils.encodeToString(bytes);
     }
+
     /******************************************************************************************************************/
-    public static BufferedImage loadImage(String uuid, Boolean isWatermark) throws IOException {
+    public static BufferedImage loadImage(String i, String uuid, Boolean isWatermark) throws IOException {
         if (isWatermark) {
-            return ImageIO.read(new File( Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
+            return ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
         }
 
-        return ImageIO.read(new File( Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
+        return ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + uuid + "\\" + i + ".png"));
     }
+
     /******************************************************************************************************************/
-    public static Settings getSettings(String id, String top_id, String bottom_id) throws IOException {
+    public static Settings getSettings(String i, String id, String top_id, String bottom_id) throws IOException {
         Settings settings = new Settings();
 
         try {
-            settings.image = ImageIO.read(new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + id + ".png"));
+            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + id + "\\" + i + ".png"));
 
             settings.width = settings.image.getWidth();
             settings.height = settings.image.getHeight();
         } catch (Exception e) {
-            settings.image = ImageIO.read(new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
 
             settings.width = settings.image.getWidth();
             settings.height = settings.image.getHeight();
@@ -157,13 +172,14 @@ public class Images {
 
         return settings;
     }
+
     /******************************************************************************************************************/
-    public static Settings appendSettings(Settings settings) throws IOException {
+    public static Settings appendSettings(Settings settings, String i) throws IOException {
 
         try {
-            settings.image = ImageIO.read(new File( Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + settings.uuid + ".png"));
+            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + settings.uuid + "\\" + i + ".png"));
         } catch (Exception e) {
-            settings.image = ImageIO.read(new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
         }
 
         BufferedImage top = getWatermark(settings.top);
@@ -212,23 +228,25 @@ public class Images {
 
         return settings;
     }
+
     /******************************************************************************************************************/
     public static List<Watermark> getWatermarks(WatermarkRepository watermarkRepository) {
         List<com.elcorazon.adminlte.model.database.Watermark> watermarks = watermarkRepository.findAll();
 
         List<Watermark> list = new ArrayList<>();
 
-        for (com.elcorazon.adminlte.model.database.Watermark watermark: watermarks) {
+        for (com.elcorazon.adminlte.model.database.Watermark watermark : watermarks) {
             list.add(new Watermark(watermark.uuid, watermark.name, false));
         }
 
         return list;
     }
+
     /******************************************************************************************************************/
     public static String getCurrentWatermarks(List<Watermark> watermarks) {
         String uuid = "";
 
-        for (Watermark watermark:watermarks) {
+        for (Watermark watermark : watermarks) {
             if (watermark.checked) {
                 uuid = watermark.uuid;
             }
@@ -236,9 +254,10 @@ public class Images {
 
         return uuid;
     }
+
     /******************************************************************************************************************/
-    public static Boolean haveWatemark(List<Watermark> watermarks) {
-        for (Watermark watermark:watermarks) {
+    public static Boolean haveWatermark(List<Watermark> watermarks) {
+        for (Watermark watermark : watermarks) {
             if (watermark.checked) {
                 return true;
             }

@@ -24,7 +24,8 @@ CREATE TABLE template
 (
     id  VARCHAR(50) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    value VARCHAR(255) NOT NULL
+    top VARCHAR(255) NOT NULL,
+    bottom VARCHAR(255) NOT NULL
 ) ENGINE = InnoDb;
 
 CREATE TABLE watermark

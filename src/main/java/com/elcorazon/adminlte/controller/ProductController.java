@@ -1,5 +1,6 @@
 package com.elcorazon.adminlte.controller;
 
+import com.elcorazon.adminlte.model.Image;
 import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.save.SettingsSave;
@@ -27,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+/**********************************************************************************************************************/
 
 @ApiIgnore
 @Controller
@@ -58,18 +60,106 @@ public class ProductController {
     }
 
     /******************************************************************************************************************/
-    @RequestMapping(value = "/product/{id}", method = RequestMethod.GET)
-    public String position(Model model, @PathVariable String id) throws IOException {
-
+    @RequestMapping(value = "/product/{id}/{index}", method = RequestMethod.GET)
+    public String position(Model model, @PathVariable String id, @PathVariable String index) throws IOException {
         Images.setEnvironment(environment);
 
         List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
         List<Watermark> watermarks_bottom = Images.getWatermarks(watermarkRepository);
 
-        Settings settings = Images.getSettings(id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
+        Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
 
+        settings = load(settings, index, watermarks_top, watermarks_bottom);
+
+        model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
+        model.addAttribute("menu", MenuCreate.getMenu());
+
+        model.addAttribute("image", Images.getImage(Images.mergeImage(settings)));
+
+        settings.name = getName(settings.uuid);
+
+        model.addAttribute("index", index);
+        model.addAttribute("settings", settings);
+        model.addAttribute("templates", templateRepository.findAll());
+
+        model.addAttribute("watermarks_top", watermarks_top);
+        model.addAttribute("watermarks_bottom", watermarks_bottom);
+        model.addAttribute("show_watermarks_top", Images.haveWatermark(watermarks_top));
+        model.addAttribute("show_watermarks_bottom", Images.haveWatermark(watermarks_bottom));
+
+        ArrayList images = new ArrayList();
+
+        if (!Files.isDirectory(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
+            Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+        } else {
+            File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+
+            Integer i = 1;
+
+            if (listOfFiles != null) {
+                for (File file : listOfFiles) {
+                    if (file.isFile() && (file.getName().indexOf(".png") > 0)) {
+                        images.add(new Image(file.getName(), i));
+
+                        i++;
+                    }
+            }
+        }
+        }
+
+        model.addAttribute("images", images);
+        model.addAttribute("countImages", images.size());
+
+        return "product/position";
+    }
+
+    /******************************************************************************************************************/
+    @RequestMapping(value = "/product/upload/{id}", method = RequestMethod.POST)
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) throws IOException {
+        if (!Files.isDirectory(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
+            Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+        }
+
+        Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id + "\\" + (getCount(id) + 1) + ".png")).toPath());
+
+        return "redirect:/product/" + id + "/1";
+    }
+
+    /******************************************************************************************************************/
+    @RequestMapping(value = "/product/delete/{id}", method = RequestMethod.GET)
+    public String delete(@PathVariable String id) throws IOException {
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                file.delete();
+            }
+        }
+
+        Files.delete(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+
+        return "redirect:/product";
+    }
+
+    /******************************************************************************************************************/
+    private String getName(String id) {
+        return Query.getStringQuery("name/" + id, HttpMethod.POST);
+    }
+
+    /******************************************************************************************************************/
+    private Integer getCount(String id) throws IOException {
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+
+        if (listOfFiles != null) {
+            return listOfFiles.length;
+        }
+
+        return 0;
+    }
+    /******************************************************************************************************************/
+    private Settings load(Settings settings, String i, List<Watermark> watermarks_top, List<Watermark> watermarks_bottom) throws IOException {
         try {
-            SettingsSave settingsSave = (new ObjectMapper()).readValue(Paths.get(Images.getPath() + id + ".json").toFile(), SettingsSave.class);
+            SettingsSave settingsSave = (new ObjectMapper()).readValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images\\" + settings.uuid + "\\settings.json").toFile(), SettingsSave.class);
 
             settings = new Settings();
 
@@ -102,7 +192,7 @@ public class ProductController {
             settings.width = settingsSave.width;
             settings.height = settingsSave.height;
 
-            settings.image = Images.loadImage(settings.uuid, false);
+            settings.image = Images.loadImage(i, settings.uuid, false);
 
             for (Watermark watermark : watermarks_top) {
                 watermark.checked = watermark.uuid.equals(top.uuid);
@@ -111,62 +201,9 @@ public class ProductController {
             for (Watermark watermark : watermarks_bottom) {
                 watermark.checked = watermark.uuid.equals(bottom.uuid);
             }
+        } catch (Exception ignored) {
 
-            settings = Images.appendSettings(settings);
-
-        } catch (IOException ignored) {
         }
-
-        model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
-        model.addAttribute("menu", MenuCreate.getMenu());
-
-        model.addAttribute("image", Images.getImage(Images.mergeImage(settings)));
-
-        settings.name = getName(settings.uuid);
-
-        model.addAttribute("settings", settings);
-        model.addAttribute("templates", templateRepository.findAll());
-
-        model.addAttribute("watermarks_top", watermarks_top);
-        model.addAttribute("watermarks_bottom", watermarks_bottom);
-        model.addAttribute("show_watermarks_top", Images.haveWatemark(watermarks_top));
-        model.addAttribute("show_watermarks_bottom", Images.haveWatemark(watermarks_bottom));
-
-        ArrayList images = new ArrayList();
-
-        if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
-            Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
-        } else {
-            File[] listOfFiles = (new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
-
-            if (listOfFiles != null) {
-                for (File file : listOfFiles) {
-                    if (file.isFile()) {
-                        images.add(file.getName());
-                    }
-                }
-            }
-        }
-
-        model.addAttribute("images", images);
-
-        return "product/position";
-    }
-
-    /******************************************************************************************************************/
-    @RequestMapping(value = "/product/upload/{id}", method = RequestMethod.POST)
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) throws IOException {
-        if (!Files.isDirectory(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
-            Files.createDirectories(Paths.get(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
-        }
-
-        Files.copy(file.getInputStream(), (new File(Images.path + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id + "\\" + id + ".png")).toPath());
-
-        return "redirect:/product/" + id;
-    }
-
-    /******************************************************************************************************************/
-    private String getName(String id) {
-        return Query.getStringQuery("name/" + id, HttpMethod.POST);
+        return Images.appendSettings(settings, i);
     }
 }
