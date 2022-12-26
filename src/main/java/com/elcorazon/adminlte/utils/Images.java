@@ -24,7 +24,6 @@ public class Images {
     public static Path path = Paths.get("").toAbsolutePath();
     /******************************************************************************************************************/
     private static Environment current_environment;
-
     /******************************************************************************************************************/
     public Images(Environment environment) {
         current_environment = environment;
@@ -119,7 +118,7 @@ public class Images {
     }
 
     /******************************************************************************************************************/
-    public static BufferedImage loadImage(String i, String uuid, Boolean isWatermark) throws IOException {
+    static BufferedImage loadImage(String i, String uuid, Boolean isWatermark) throws IOException {
         if (isWatermark) {
             return ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
         }

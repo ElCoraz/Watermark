@@ -1,6 +1,5 @@
 package com.elcorazon.adminlte.controller;
 
-import com.elcorazon.adminlte.model.Image;
 import com.elcorazon.adminlte.model.database.Template;
 import com.elcorazon.adminlte.model.settings.Watermark;
 import com.elcorazon.adminlte.model.settings.main.Layer;
@@ -90,7 +89,7 @@ public class ApiController {
     @GetMapping(path = "/image/{id}")
     public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException {
 
-        Integer count = 0;
+        int count = 0;
 
         File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
 

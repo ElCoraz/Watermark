@@ -2,7 +2,6 @@ package com.elcorazon.adminlte.controller;
 
 import com.elcorazon.adminlte.model.database.Template;
 import com.elcorazon.adminlte.repository.TemplateRepository;
-import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.UUID;
 
 @ApiIgnore
 @Controller
