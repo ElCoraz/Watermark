@@ -7,6 +7,7 @@ public class Menu {
     public String name;
     public String link;
     public String icon;
+    /******************************************************************************************************************/
     public List<SubMenu> subMenu;
     /******************************************************************************************************************/
     public Menu(String _name, String _link, String _icon, List<SubMenu> _subMenu) {

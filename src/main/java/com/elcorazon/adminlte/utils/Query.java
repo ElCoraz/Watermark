@@ -18,6 +18,7 @@ public class Query {
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
         HttpHeaders httpHeaders = new HttpHeaders();
+
         httpHeaders.add("Authorization", "Basic " + authorization);
 
         HttpEntity<Void> httpEntity = new HttpEntity<>(httpHeaders);

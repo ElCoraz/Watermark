@@ -2,7 +2,6 @@ package com.elcorazon.adminlte.controller;
 
 import com.elcorazon.adminlte.model.database.Template;
 import com.elcorazon.adminlte.model.settings.Watermark;
-import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.save.LayerSave;
 import com.elcorazon.adminlte.repository.TemplateRepository;
@@ -20,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 /**********************************************************************************************************************/
 @RestController
