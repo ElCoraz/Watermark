@@ -1,5 +1,7 @@
 package com.elcorazon.adminlte.model.settings.main;
 
+import com.elcorazon.adminlte.model.settings.save.LayerSave;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -40,4 +42,17 @@ public class Layer {
     public Integer height;
     /******************************************************************************************************************/
     public BufferedImage image;
+    /******************************************************************************************************************/
+    @JsonIgnore
+    public LayerSave getSave() {
+        LayerSave layer = new LayerSave();
+
+        layer.uuid = this.uuid;
+        layer.width = this.width;
+        layer.scale = this.scale;
+        layer.alpha = this.alpha;
+        layer.height = this.height;
+
+        return layer;
+    }
 }

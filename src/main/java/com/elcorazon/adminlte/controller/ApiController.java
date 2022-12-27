@@ -4,6 +4,7 @@ import com.elcorazon.adminlte.model.database.Template;
 import com.elcorazon.adminlte.model.settings.Watermark;
 import com.elcorazon.adminlte.model.settings.main.Layer;
 import com.elcorazon.adminlte.model.settings.main.Settings;
+import com.elcorazon.adminlte.model.settings.save.LayerSave;
 import com.elcorazon.adminlte.repository.TemplateRepository;
 import com.elcorazon.adminlte.repository.WatermarkRepository;
 import com.elcorazon.adminlte.utils.Images;
@@ -19,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**********************************************************************************************************************/
 @RestController
@@ -43,7 +45,7 @@ public class ApiController {
     @PostMapping(path = "/merge")
     public ResponseEntity<String> merge(@RequestBody String body) throws IOException {
 
-        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1");
+        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true);
 
         new com.elcorazon.adminlte.utils.Settings(environment).save(settings);
 
@@ -64,15 +66,38 @@ public class ApiController {
 
     /******************************************************************************************************************/
     @PostMapping(path = "/template/{template}")
-    public ResponseEntity<String> search(@RequestBody String body, @PathVariable String template) throws IOException  {
+    public ResponseEntity<String> template(@RequestBody String body, @PathVariable String template) throws IOException  {
         Template Template = templateRepository.findAllById(template);
 
-        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1");
+        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true);
 
-        settings.top = new ObjectMapper().readValue(Template.top, Layer.class);
-        settings.bottom = new ObjectMapper().readValue(Template.bottom, Layer.class);
+        settings.top = (new ObjectMapper().readValue(Template.top, LayerSave.class)).getLoad();
+        settings.bottom = (new ObjectMapper().readValue(Template.bottom, LayerSave.class)).getLoad();
 
         new com.elcorazon.adminlte.utils.Settings(environment).save(settings);
+
+        return ResponseEntity.status(HttpStatus.OK).body(Images.getImage(Images.mergeImage(settings)));
+    }
+
+    /******************************************************************************************************************/
+    @PostMapping(path = "/template/create/{name}/{id}")
+    public ResponseEntity<String> create(@RequestBody String body, @PathVariable String name, @PathVariable String id) throws IOException  {
+        Template template = templateRepository.findAllById(id);
+
+        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", false);
+
+        if (template == null) {
+            template = new Template();
+
+            template.id = id;
+        }
+
+        template.name = name;
+
+        template.top = (new ObjectMapper()).writeValueAsString(settings.top.getSave());
+        template.bottom = (new ObjectMapper()).writeValueAsString(settings.bottom.getSave());
+
+        templateRepository.save(template);
 
         return ResponseEntity.status(HttpStatus.OK).body(Images.getImage(Images.mergeImage(settings)));
     }

@@ -165,7 +165,7 @@
                                     $('.dropdown-toggle').text($(this).text());
 
                                     $.ajax({
-                                        url: "/api/template/" + $(this).id,
+                                        url: "/api/template/" + this.id,
                                         method: "POST",
                                         data: JSON.stringify({
                                             uuid:$('#uuid').val(),
@@ -189,7 +189,9 @@
                                         contentType: "application/json; charset=utf-8"
                                     })
                                     .done(function (data) {
-                                        $('#img').attr('src', "data:image/png;base64," + data);
+                                        //$('#img').attr('src', "data:image/png;base64," + data);
+
+                                        location.reload();
                                     });
 
                                 });

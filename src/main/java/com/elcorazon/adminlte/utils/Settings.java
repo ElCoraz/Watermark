@@ -93,7 +93,7 @@ public class Settings {
                 throw new Exception("Not found file");
             }
         }
-        return Images.appendSettings(settings, i);
+        return Images.appendSettings(settings, i, true);
     }
 
     /******************************************************************************************************************/

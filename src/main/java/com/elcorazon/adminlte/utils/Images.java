@@ -94,7 +94,9 @@ public class Images {
             graphics2D.drawImage(settings.bottom.image, settings.bottom.width, settings.bottom.height, null);
         }
 
-        graphics2D.drawImage(settings.image, 0, 0, null);
+        if (settings.image != null) {
+            graphics2D.drawImage(settings.image, 0, 0, null);
+        }
 
         if (settings.top.image != null) {
             graphics2D.drawImage(settings.top.image, settings.top.width, settings.top.height, null);
@@ -173,12 +175,14 @@ public class Images {
     }
 
     /******************************************************************************************************************/
-    public static Settings appendSettings(Settings settings, String i) throws IOException {
+    public static Settings appendSettings(Settings settings, String i, boolean load) throws IOException {
 
-        try {
-            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + settings.uuid + "\\" + i + ".png"));
-        } catch (Exception e) {
-            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+        if (load) {
+            try {
+                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + settings.uuid + "\\" + i + ".png"));
+            } catch (Exception e) {
+                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+            }
         }
 
         BufferedImage top = getWatermark(settings.top);
