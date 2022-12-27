@@ -60,10 +60,12 @@ public class WatermarksController {
 
     /******************************************************************************************************************/
     @RequestMapping(value = "/watermark/delete/{id}", method = RequestMethod.GET)
-    public String delete(@PathVariable String id) {
+    public String delete(@PathVariable String id) throws IOException {
         Optional<Watermark> watermark = watermarkRepository.findById(id);
 
         watermark.ifPresent(value -> watermarkRepository.delete(value));
+
+        (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\watermarks\\" + id + ".png")).delete();
 
         return "redirect:/watermark";
     }
