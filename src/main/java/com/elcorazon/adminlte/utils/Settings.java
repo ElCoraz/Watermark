@@ -78,6 +78,7 @@ public class Settings {
             settings.name = settingsSave.name;
             settings.width = settingsSave.width;
             settings.height = settingsSave.height;
+            settings.template = settingsSave.template;
 
             settings.image = Images.loadImage(i, settings.uuid, false);
 
@@ -102,8 +103,9 @@ public class Settings {
 
         settingsSave.uuid = settings.uuid;
         settingsSave.name = settings.name;
-        settingsSave.height = settings.height;
         settingsSave.width = settings.width;
+        settingsSave.height = settings.height;
+        settingsSave.template = settings.template;
 
         LayerSave bottom = new LayerSave();
 

@@ -1,14 +1,17 @@
 package com.elcorazon.adminlte.controller;
 
 import com.elcorazon.adminlte.model.Image;
+import com.elcorazon.adminlte.model.database.Template;
 import com.elcorazon.adminlte.model.settings.main.Settings;
 import com.elcorazon.adminlte.model.settings.Watermark;
+import com.elcorazon.adminlte.model.settings.save.LayerSave;
 import com.elcorazon.adminlte.repository.TemplateRepository;
 import com.elcorazon.adminlte.repository.WatermarkRepository;
 import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.Query;
 import com.elcorazon.adminlte.utils.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
@@ -69,6 +72,13 @@ public class ProductController {
 
         settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, false);
 
+        Template template = templateRepository.findAllById(settings.template);
+
+        if (template != null) {
+            settings.top = (new ObjectMapper().readValue(template.top, LayerSave.class)).getLoad();
+            settings.bottom = (new ObjectMapper().readValue(template.bottom, LayerSave.class)).getLoad();
+        }
+
         model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
         model.addAttribute("menu", MenuCreate.getMenu());
 
@@ -78,6 +88,7 @@ public class ProductController {
 
         model.addAttribute("index", index);
         model.addAttribute("settings", settings);
+
         model.addAttribute("templates", templateRepository.findAll());
 
         model.addAttribute("watermarks_top", watermarks_top);

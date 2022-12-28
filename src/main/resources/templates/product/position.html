@@ -37,6 +37,7 @@
                             <input type="hidden" id="index" th:value="${index}">
                             <input type="hidden" id="width" th:value="${settings.width}">
                             <input type="hidden" id="height" th:value="${settings.height}">
+                            <input type="hidden" id="template" th:value="${settings.template}">
                         </div>
                         <div class="col-6">
                             <div class="row">
@@ -161,36 +162,41 @@
                             /*<![CDATA[*/
                             $(document).ready(function(){
                                 /** ************************************************************************************/
+                                function getObject(top, bottom) {
+                                   return JSON.stringify({
+                                       uuid: $('#uuid').val(),
+                                       width: $('#width').val(),
+                                       height: $('#height').val(),
+                                       template: $('#template').val(),
+                                       bottom: {
+                                           uuid: bottom,
+                                           scale: parseInt($('#scale_back').val()),
+                                           alpha: parseFloat($('#alpha_back').val()),
+                                           width: parseInt($('#width_back').val()),
+                                           height: parseInt($('#height_back').val())
+                                       },
+                                       top: {
+                                           uuid: top,
+                                           scale: parseInt($('#scale_top').val()),
+                                           alpha: parseFloat($('#alpha_top').val()),
+                                           width: parseInt($('#width_top').val()),
+                                           height: parseInt($('#height_top').val())
+                                       }
+                                   });
+                                }
+                                /** ************************************************************************************/
                                 $('.dropdown-item').on("click", function() {
                                     $('.dropdown-toggle').text($(this).text());
+
+                                    $('#template').val(this.id);
 
                                     $.ajax({
                                         url: "/api/template/" + this.id,
                                         method: "POST",
-                                        data: JSON.stringify({
-                                            uuid:$('#uuid').val(),
-                                            width: $('#width').val(),
-                                            height: $('#height').val(),
-                                            bottom: {
-                                                uuid: "",
-                                                scale: parseInt($('#scale_back').val()),
-                                                alpha: parseFloat($('#alpha_back').val()),
-                                                width: parseInt($('#width_back').val()),
-                                                height: parseInt($('#height_back').val())
-                                            },
-                                            top: {
-                                                uuid: "",
-                                                scale: parseInt($('#scale_top').val()),
-                                                alpha: parseFloat($('#alpha_top').val()),
-                                                width: parseInt($('#width_top').val()),
-                                                height: parseInt($('#height_top').val())
-                                            }
-                                        }),
+                                        data: getObject("", ""),
                                         contentType: "application/json; charset=utf-8"
                                     })
                                     .done(function (data) {
-                                        //$('#img').attr('src', "data:image/png;base64," + data);
-
                                         location.reload();
                                     });
 
@@ -210,25 +216,7 @@
                                     $.ajax({
                                         url: "/api/merge",
                                         method: "POST",
-                                        data: JSON.stringify({
-                                            uuid:$('#uuid').val(),
-                                            width: $('#width').val(),
-                                            height: $('#height').val(),
-                                            bottom: {
-                                                uuid: getID("bottom"),
-                                                scale: parseInt($('#scale_back').val()),
-                                                alpha: parseFloat($('#alpha_back').val()),
-                                                width: parseInt($('#width_back').val()),
-                                                height: parseInt($('#height_back').val())
-                                            },
-                                            top: {
-                                                uuid: getID("top"),
-                                                scale: parseInt($('#scale_top').val()),
-                                                alpha: parseFloat($('#alpha_top').val()),
-                                                width: parseInt($('#width_top').val()),
-                                                height: parseInt($('#height_top').val())
-                                            }
-                                        }),
+                                        data: getObject(getID("top"), getID("bottom")),
                                         contentType: "application/json; charset=utf-8"
                                     })
                                     .done(function (data) {

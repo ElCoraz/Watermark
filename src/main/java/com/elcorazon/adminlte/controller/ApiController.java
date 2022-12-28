@@ -33,6 +33,7 @@ public class ApiController {
     /******************************************************************************************************************/
     @Autowired
     private Environment environment;
+
     /******************************************************************************************************************/
     @GetMapping(path = "/", produces = "application/json")
     public String index() {
@@ -64,7 +65,7 @@ public class ApiController {
 
     /******************************************************************************************************************/
     @PostMapping(path = "/template/{template}")
-    public ResponseEntity<String> template(@RequestBody String body, @PathVariable String template) throws IOException  {
+    public ResponseEntity<String> template(@RequestBody String body, @PathVariable String template) throws IOException {
         Template Template = templateRepository.findAllById(template);
 
         Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true);
@@ -79,7 +80,7 @@ public class ApiController {
 
     /******************************************************************************************************************/
     @PostMapping(path = "/template/create/{name}/{id}")
-    public ResponseEntity<String> create(@RequestBody String body, @PathVariable String name, @PathVariable String id) throws IOException  {
+    public ResponseEntity<String> create(@RequestBody String body, @PathVariable String name, @PathVariable String id) throws IOException {
         Template template = templateRepository.findAllById(id);
 
         Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", false);
@@ -125,8 +126,30 @@ public class ApiController {
     }
 
     /******************************************************************************************************************/
-    @GetMapping(path = "/image/{id}/{index}")
-    public ResponseEntity<byte[]> dataImage(@PathVariable String id, @PathVariable String index) throws Exception {
+    private ResponseEntity<byte[]> image(ByteArrayOutputStream byteArrayOutputStream, String type) {
+        MediaType mediaType = null;
+
+        switch (type) {
+            case "png":
+                mediaType = MediaType.IMAGE_PNG;
+                break;
+            case "gif":
+                mediaType = MediaType.IMAGE_GIF;
+                break;
+            case "jpg":
+                mediaType = MediaType.IMAGE_JPEG;
+                break;
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image." + type + "\"")
+                .contentType(mediaType)
+                .body(byteArrayOutputStream.toByteArray());
+    }
+
+    /******************************************************************************************************************/
+    @GetMapping(path = "/image/{id}/{type}/{index}")
+    public ResponseEntity<byte[]> dataImage(@PathVariable String id, @PathVariable String type, @PathVariable String index) throws Exception {
         Images.setEnvironment(environment);
 
         List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
@@ -137,19 +160,13 @@ public class ApiController {
         try {
             settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, true);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image.png\"")
-                    .contentType(MediaType.IMAGE_PNG)
-                    .body((new ByteArrayOutputStream()).toByteArray());
+            return image(new ByteArrayOutputStream(), type);
         }
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        ImageIO.write(Images.mergeImage(settings) , "png", byteArrayOutputStream);
+        ImageIO.write(Images.mergeImage(settings), type, byteArrayOutputStream);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"image.png\"")
-                        .contentType(MediaType.IMAGE_PNG)
-                        .body(byteArrayOutputStream.toByteArray());
+        return image(byteArrayOutputStream, type);
     }
 }
