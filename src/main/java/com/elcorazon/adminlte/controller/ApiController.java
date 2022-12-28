@@ -1,5 +1,6 @@
 package com.elcorazon.adminlte.controller;
 
+import com.elcorazon.adminlte.model.Search;
 import com.elcorazon.adminlte.model.database.Template;
 import com.elcorazon.adminlte.model.settings.Watermark;
 import com.elcorazon.adminlte.model.settings.main.Settings;
@@ -8,6 +9,7 @@ import com.elcorazon.adminlte.repository.TemplateRepository;
 import com.elcorazon.adminlte.repository.WatermarkRepository;
 import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.Query;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -55,14 +57,14 @@ public class ApiController {
 
     /******************************************************************************************************************/
     @PostMapping(path = "/table/{id}")
-    public ResponseEntity<String> table(@PathVariable String id) {
-        return Query.getResponseEntityQuery("list/" + id, HttpMethod.GET);
+    public ResponseEntity<String> table(@PathVariable String id) throws JsonProcessingException {
+        return Query.getResponseEntityQuery("list/" + id, HttpMethod.GET, null);
     }
 
     /******************************************************************************************************************/
-    @PostMapping(path = "/search/{text}")
-    public ResponseEntity<String> search(@PathVariable String text) {
-        return Query.getResponseEntityQuery("search/" + text, HttpMethod.GET);
+    @PostMapping(path = "/search")
+    public ResponseEntity<String> search(@RequestBody String body) throws JsonProcessingException {
+        return Query.getResponseEntityQuery("search/", HttpMethod.POST, new ObjectMapper().readValue(body, Search.class));
     }
 
     /******************************************************************************************************************/
@@ -105,8 +107,8 @@ public class ApiController {
 
     /******************************************************************************************************************/
     @PostMapping(path = "/count/{id}")
-    public ResponseEntity<String> count(@PathVariable String id) {
-        return Query.getResponseEntityQuery("count/" + id, HttpMethod.GET);
+    public ResponseEntity<String> count(@PathVariable String id) throws JsonProcessingException {
+        return Query.getResponseEntityQuery("count/" + id, HttpMethod.GET, null);
     }
 
     /******************************************************************************************************************/

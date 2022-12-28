@@ -37,11 +37,11 @@ public class Images {
     /******************************************************************************************************************/
     private static BufferedImage resize(BufferedImage inputImage, int scaledWidth, int scaledHeight) {
 
-        BufferedImage bufferedImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bufferedImage = new BufferedImage(scaledWidth + 200, scaledHeight - 30, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D graphics2D = bufferedImage.createGraphics();
 
-        graphics2D.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        graphics2D.drawImage(inputImage, 0, 0, scaledWidth + 200, scaledHeight - 30, null);
 
         graphics2D.dispose();
 

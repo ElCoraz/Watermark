@@ -11,6 +11,7 @@ import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.MenuCreate;
 import com.elcorazon.adminlte.utils.Query;
 import com.elcorazon.adminlte.utils.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -51,7 +52,7 @@ public class ProductController {
 
     /******************************************************************************************************************/
     @RequestMapping(value = "/product", method = RequestMethod.GET)
-    public String index(Model model) {
+    public String index(Model model) throws JsonProcessingException {
         model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
         model.addAttribute("menu", MenuCreate.getMenu());
 
@@ -151,7 +152,7 @@ public class ProductController {
     }
 
     /******************************************************************************************************************/
-    private String getName(String id) {
+    private String getName(String id) throws JsonProcessingException {
         return Query.getStringQuery("name/" + id, HttpMethod.POST);
     }
 

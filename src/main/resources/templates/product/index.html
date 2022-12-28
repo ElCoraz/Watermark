@@ -64,6 +64,34 @@
                         data: [(${data})]
                     });
                     /** ***********************************************************************************************/
+                    function search() {
+                        $.ajax({
+                            beforeSend: function() {
+                                $("#loader").fadeIn(300);
+                            },
+                            complete: function() {
+                                setTimeout(function(){
+                                    $("#loader").fadeOut(300);
+                                }, 500);
+                            },
+                            method: 'POST',
+                            url: '/api/search',
+                            data: JSON.stringify({
+                                search: $('#search_text').val()
+                            }),
+                            contentType: "application/json; charset=utf-8"
+                        })
+                        .done(function(data) {
+                            $('#table').html(data);
+                        });
+                    }
+                    /** ***********************************************************************************************/
+                    $("#search_text").on("keydown", function(event) {
+                        if(event.which === 13) {
+                            search();
+                        }
+                    });
+                    /** ***********************************************************************************************/
                     $('#treeview').on('nodeSelected', function (event, node) {
                         $.ajax({
                             beforeSend: function() {
@@ -83,21 +111,7 @@
                     });
                     /** ***********************************************************************************************/
                     $('#search').click(function() {
-                        $.ajax({
-                            beforeSend: function() {
-                                $("#loader").fadeIn(300);
-                            },
-                            complete: function() {
-                                setTimeout(function(){
-                                    $("#loader").fadeOut(300);
-                                }, 500);
-                            },
-                            method: 'POST',
-                            url: '/api/search/' + $('#search_text').val()
-                        })
-                        .done(function(data) {
-                            $('#table').html(data);
-                        });
+                        search();
                     });
                     /** ***********************************************************************************************/
                 });
