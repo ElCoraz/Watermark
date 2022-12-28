@@ -72,9 +72,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationManagerBuilder.jdbcAuthentication().dataSource(datasource);
 
         if (!jdbcUserDetailsManager.userExists("admin")) {
-            List<GrantedAuthority> grantedAuthoritys = new ArrayList<GrantedAuthority>();
-            grantedAuthoritys.add(new SimpleGrantedAuthority("USER"));
-            jdbcUserDetailsManager.createUser(new User("admin", passwordEncoder.encode("4217777"), grantedAuthoritys));
+            List<GrantedAuthority> grantedAuthority = new ArrayList<GrantedAuthority>();
+            grantedAuthority.add(new SimpleGrantedAuthority("USER"));
+            jdbcUserDetailsManager.createUser(new User("admin", passwordEncoder.encode("4217777"), grantedAuthority));
+        }
+        if (!jdbcUserDetailsManager.userExists("user")) {
+            List<GrantedAuthority> grantedAuthority = new ArrayList<GrantedAuthority>();
+            grantedAuthority.add(new SimpleGrantedAuthority("USER"));
+            jdbcUserDetailsManager.createUser(new User("user", passwordEncoder.encode("123"), grantedAuthority));
         }
     }
 }

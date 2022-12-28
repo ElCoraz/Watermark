@@ -68,9 +68,7 @@ public class ProductController {
         List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
         List<Watermark> watermarks_bottom = Images.getWatermarks(watermarkRepository);
 
-        Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
-
-        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, false);
+        Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom), true);
 
         Template template = templateRepository.findAllById(settings.template);
 
@@ -78,6 +76,8 @@ public class ProductController {
             settings.top = (new ObjectMapper().readValue(template.top, LayerSave.class)).getLoad();
             settings.bottom = (new ObjectMapper().readValue(template.bottom, LayerSave.class)).getLoad();
         }
+
+        settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, false, true);
 
         model.addAttribute("user", new User(SecurityContextHolder.getContext().getAuthentication()));
         model.addAttribute("menu", MenuCreate.getMenu());

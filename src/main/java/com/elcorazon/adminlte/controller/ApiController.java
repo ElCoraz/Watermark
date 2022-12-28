@@ -15,6 +15,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +46,7 @@ public class ApiController {
     @PostMapping(path = "/merge")
     public ResponseEntity<String> merge(@RequestBody String body) throws IOException {
 
-        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true);
+        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true, true);
 
         new com.elcorazon.adminlte.utils.Settings(environment).save(settings);
 
@@ -68,7 +70,7 @@ public class ApiController {
     public ResponseEntity<String> template(@RequestBody String body, @PathVariable String template) throws IOException {
         Template Template = templateRepository.findAllById(template);
 
-        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true);
+        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", true, true);
 
         settings.top = (new ObjectMapper().readValue(Template.top, LayerSave.class)).getLoad();
         settings.bottom = (new ObjectMapper().readValue(Template.bottom, LayerSave.class)).getLoad();
@@ -83,7 +85,7 @@ public class ApiController {
     public ResponseEntity<String> create(@RequestBody String body, @PathVariable String name, @PathVariable String id) throws IOException {
         Template template = templateRepository.findAllById(id);
 
-        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", false);
+        Settings settings = Images.appendSettings(new ObjectMapper().readValue(body, Settings.class), "1", false, false);
 
         if (template == null) {
             template = new Template();
@@ -155,17 +157,27 @@ public class ApiController {
         List<Watermark> watermarks_top = Images.getWatermarks(watermarkRepository);
         List<Watermark> watermarks_bottom = Images.getWatermarks(watermarkRepository);
 
-        Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom));
+        Settings settings = Images.getSettings(index, id, Images.getCurrentWatermarks(watermarks_top), Images.getCurrentWatermarks(watermarks_bottom), true);
 
         try {
-            settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, true);
+            settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, true, true);
         } catch (Exception e) {
             return image(new ByteArrayOutputStream(), type);
         }
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        ImageIO.write(Images.mergeImage(settings), type, byteArrayOutputStream);
+        BufferedImage image = Images.mergeImage(settings);
+
+        if (type.equals("jpg") || type.equals("gif")) {
+            BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+            newImage.createGraphics().drawImage(image, 0, 0, Color.white, null);
+
+            image = newImage;
+        }
+
+        ImageIO.write(image, type, byteArrayOutputStream);
 
         return image(byteArrayOutputStream, type);
     }

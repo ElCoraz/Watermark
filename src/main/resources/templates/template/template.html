@@ -19,6 +19,9 @@
 
 <div layout:fragment="content">
     <div class="col-lg-12">
+        <div class="alert alert-danger" role="alert">
+            Введите наименование.
+        </div>
         <div class="card">
             <div class="card-body">
                 <div class="box-body no-padding">
@@ -105,6 +108,8 @@
                             /*<![CDATA[*/
                             $(document).ready(function(){
                                 /** ************************************************************************************/
+                                $('.alert').hide();
+                                /** ************************************************************************************/
                                 function getID(className) {
                                     let objects = $("." + className);
                                     for (let i = 0; i < objects.length; i++) {
@@ -115,6 +120,16 @@
                                     return "";
                                 }
                                 /** ***********************************************************************************/
+                                function getValues(uuid, name) {
+                                    return {
+                                        uuid: uuid,
+                                        scale: parseInt($('#scale_' + name).val()),
+                                        alpha: parseFloat($('#alpha_' + name).val()),
+                                        width: parseInt($('#width_' + name).val()),
+                                        height: parseInt($('#height_' + name).val())
+                                    }
+                                }
+                                /** ***********************************************************************************/
                                 function update() {
                                     $.ajax({
                                         url: "/api/template/create/" + $('#name').val() + "/" +  $('#id').val(),
@@ -123,20 +138,8 @@
                                             uuid:"",
                                             width: 800,
                                             height: 533,
-                                            bottom: {
-                                                uuid: getID("bottom"),
-                                                scale: parseInt($('#scale_back').val()),
-                                                alpha: parseFloat($('#alpha_back').val()),
-                                                width: parseInt($('#width_back').val()),
-                                                height: parseInt($('#height_back').val())
-                                            },
-                                            top: {
-                                                uuid: getID("top"),
-                                                scale: parseInt($('#scale_top').val()),
-                                                alpha: parseFloat($('#alpha_top').val()),
-                                                width: parseInt($('#width_top').val()),
-                                                height: parseInt($('#height_top').val())
-                                            }
+                                            bottom: getValues(getID("bottom"), "back"),
+                                            top: getValues(getID("top"), "top")
                                         }),
                                         contentType: "application/json; charset=utf-8"
                                     })
@@ -146,6 +149,12 @@
                                 }
                                 /** ***********************************************************************************/
                                 $("input[type='checkbox']").on("click", function() {
+                                    if ($('#name').val() === "") {
+                                        $('.alert').show();
+                                        this.checked = false;
+                                        return;
+                                    }
+
                                     let id = this.id;
                                     let checked = this.checked;
                                     let className = this.className.replace("form-check-input", "").trim();
@@ -161,7 +170,18 @@
                                     update();
                                 });
                                 /** ***********************************************************************************/
+                                $("#name").on("input", function() {
+                                    if (this.value !== "") {
+                                        $('.alert').hide();
+                                    }
+                                });
+                                /** ***********************************************************************************/
                                 $("input[type='range']").on("input", function() {
+                                        if ($('#name').val() === "") {
+                                        $('.alert').show();
+                                        return;
+                                    }
+
                                     update();
                                 });
                                 /** ***********************************************************************************/

@@ -44,7 +44,7 @@ public class Settings {
     }
 
     /******************************************************************************************************************/
-    public com.elcorazon.adminlte.model.settings.main.Settings load(com.elcorazon.adminlte.model.settings.main.Settings settings, String i, List<Watermark> watermarks_top, List<Watermark> watermarks_bottom, boolean exception) throws Exception {
+    public com.elcorazon.adminlte.model.settings.main.Settings load(com.elcorazon.adminlte.model.settings.main.Settings settings, String i, List<Watermark> watermarks_top, List<Watermark> watermarks_bottom, boolean exception, boolean loadImage) throws Exception {
         try {
             SettingsSave settingsSave = (new ObjectMapper()).readValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images\\" + settings.uuid + "\\settings.json").toFile(), SettingsSave.class);
 
@@ -80,7 +80,9 @@ public class Settings {
             settings.height = settingsSave.height;
             settings.template = settingsSave.template;
 
-            settings.image = Images.loadImage(i, settings.uuid, false);
+            if (loadImage) {
+                settings.image = Images.loadImage(i, settings.uuid, false);
+            }
 
             for (Watermark watermark : watermarks_top) {
                 watermark.checked = watermark.uuid.equals(top.uuid);
@@ -94,7 +96,7 @@ public class Settings {
                 throw new Exception("Not found file");
             }
         }
-        return Images.appendSettings(settings, i, true);
+        return Images.appendSettings(settings, i, true, loadImage);
     }
 
     /******************************************************************************************************************/

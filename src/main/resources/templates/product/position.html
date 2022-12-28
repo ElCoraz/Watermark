@@ -161,6 +161,16 @@
                         <script>
                             /*<![CDATA[*/
                             $(document).ready(function(){
+                                /** ***********************************************************************************/
+                                function getValues(uuid, name) {
+                                    return {
+                                        uuid: uuid,
+                                        scale: parseInt($('#scale_' + name).val()),
+                                        alpha: parseFloat($('#alpha_' + name).val()),
+                                        width: parseInt($('#width_' + name).val()),
+                                        height: parseInt($('#height_' + name).val())
+                                    }
+                                }
                                 /** ************************************************************************************/
                                 function getObject(top, bottom) {
                                    return JSON.stringify({
@@ -168,20 +178,8 @@
                                        width: $('#width').val(),
                                        height: $('#height').val(),
                                        template: $('#template').val(),
-                                       bottom: {
-                                           uuid: bottom,
-                                           scale: parseInt($('#scale_back').val()),
-                                           alpha: parseFloat($('#alpha_back').val()),
-                                           width: parseInt($('#width_back').val()),
-                                           height: parseInt($('#height_back').val())
-                                       },
-                                       top: {
-                                           uuid: top,
-                                           scale: parseInt($('#scale_top').val()),
-                                           alpha: parseFloat($('#alpha_top').val()),
-                                           width: parseInt($('#width_top').val()),
-                                           height: parseInt($('#height_top').val())
-                                       }
+                                       bottom: getValues(bottom, "back"),
+                                       top: getValues(top, "top")
                                    });
                                 }
                                 /** ************************************************************************************/

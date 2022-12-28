@@ -54,7 +54,7 @@ public class Images {
     }
 
     /******************************************************************************************************************/
-    public static BufferedImage getWatermark(Layer layer) throws IOException {
+    static BufferedImage getWatermark(Layer layer) throws IOException {
         if (layer.uuid.equals("")) {
             return null;
         }
@@ -129,19 +129,26 @@ public class Images {
     }
 
     /******************************************************************************************************************/
-    public static Settings getSettings(String i, String id, String top_id, String bottom_id) throws IOException {
+    public static Settings getSettings(String i, String id, String top_id, String bottom_id, boolean loadImage) throws IOException {
         Settings settings = new Settings();
 
+        settings.width = 800;
+        settings.height = 533;
+
         try {
-            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + id + "\\" + i + ".png"));
+            if (loadImage) {
+                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + id + "\\" + i + ".png"));
 
-            settings.width = settings.image.getWidth();
-            settings.height = settings.image.getHeight();
+                settings.width = settings.image.getWidth();
+                settings.height = settings.image.getHeight();
+            }
         } catch (Exception e) {
-            settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+            if (loadImage) {
+                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
 
-            settings.width = settings.image.getWidth();
-            settings.height = settings.image.getHeight();
+                settings.width = settings.image.getWidth();
+                settings.height = settings.image.getHeight();
+            }
         }
 
         settings.uuid = id;
@@ -175,13 +182,15 @@ public class Images {
     }
 
     /******************************************************************************************************************/
-    public static Settings appendSettings(Settings settings, String i, boolean load) throws IOException {
+    public static Settings appendSettings(Settings settings, String i, boolean load, boolean loadImage) throws IOException {
 
         if (load) {
-            try {
-                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + settings.uuid + "\\" + i + ".png"));
-            } catch (Exception e) {
-                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+            if (loadImage) {
+                try {
+                    settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + settings.uuid + "\\" + i + ".png"));
+                } catch (Exception e) {
+                    settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+                }
             }
         }
 
