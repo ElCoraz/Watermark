@@ -46,7 +46,7 @@ public class Settings {
     /******************************************************************************************************************/
     public com.elcorazon.adminlte.model.settings.main.Settings load(com.elcorazon.adminlte.model.settings.main.Settings settings, String i, List<Watermark> watermarks_top, List<Watermark> watermarks_bottom, boolean exception, boolean loadImage) throws Exception {
         try {
-            SettingsSave settingsSave = (new ObjectMapper()).readValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images\\" + settings.uuid + "\\settings.json").toFile(), SettingsSave.class);
+            SettingsSave settingsSave = (new ObjectMapper()).readValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images/" + settings.uuid + "/settings.json").toFile(), SettingsSave.class);
 
             settings = new com.elcorazon.adminlte.model.settings.main.Settings();
 
@@ -128,6 +128,6 @@ public class Settings {
         settingsSave.top = top;
         settingsSave.bottom = bottom;
 
-        (new ObjectMapper()).writeValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images\\" + settings.uuid + "\\settings.json").toFile(), settingsSave);
+        (new ObjectMapper()).writeValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images/" + settings.uuid + "/settings.json").toFile(), settingsSave);
     }
 }

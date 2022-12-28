@@ -125,7 +125,7 @@ public class Images {
             return ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getWatermark()) + uuid + ".png"));
         }
 
-        return ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + uuid + "\\" + i + ".png"));
+        return ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images/" + uuid + "/" + i + ".png"));
     }
 
     /******************************************************************************************************************/
@@ -137,14 +137,14 @@ public class Images {
 
         try {
             if (loadImage) {
-                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + id + "\\" + i + ".png"));
+                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images/" + id + "/" + i + ".png"));
 
                 settings.width = settings.image.getWidth();
                 settings.height = settings.image.getHeight();
             }
         } catch (Exception e) {
             if (loadImage) {
-                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+                settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "/none.png"));
 
                 settings.width = settings.image.getWidth();
                 settings.height = settings.image.getHeight();
@@ -187,9 +187,9 @@ public class Images {
         if (load) {
             if (loadImage) {
                 try {
-                    settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images\\" + settings.uuid + "\\" + i + ".png"));
+                    settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "images/" + settings.uuid + "/" + i + ".png"));
                 } catch (Exception e) {
-                    settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "\\none.png"));
+                    settings.image = ImageIO.read(new File(getPath() + (new com.elcorazon.adminlte.utils.Settings(current_environment).getPath()) + "/none.png"));
                 }
             }
         }

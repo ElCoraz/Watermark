@@ -98,10 +98,10 @@ public class ProductController {
 
         ArrayList images = new ArrayList();
 
-        if (!Files.isDirectory(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
-            Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+        if (!Files.isDirectory(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id))) {
+            Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id));
         } else {
-            File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+            File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id)).listFiles();
 
             Integer i = 1;
 
@@ -125,11 +125,11 @@ public class ProductController {
     /******************************************************************************************************************/
     @RequestMapping(value = "/product/upload/{id}", method = RequestMethod.POST)
     public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable String id) throws IOException {
-        if (!Files.isDirectory(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id))) {
-            Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+        if (!Files.isDirectory(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id))) {
+            Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id));
         }
 
-        Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id + "\\" + (getCount(id) + 1) + ".png")).toPath());
+        Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id + "/" + (getCount(id) + 1) + ".png")).toPath());
 
         return "redirect:/product/" + id + "/1";
     }
@@ -137,7 +137,7 @@ public class ProductController {
     /******************************************************************************************************************/
     @RequestMapping(value = "/product/delete/{id}", method = RequestMethod.GET)
     public String delete(@PathVariable String id) throws IOException {
-        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id)).listFiles();
 
         if (listOfFiles != null) {
             for (File file : listOfFiles) {
@@ -145,7 +145,7 @@ public class ProductController {
             }
         }
 
-        Files.delete(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id));
+        Files.delete(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id));
 
         return "redirect:/product";
     }
@@ -157,7 +157,7 @@ public class ProductController {
 
     /******************************************************************************************************************/
     private Integer getCount(String id) throws IOException {
-        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id)).listFiles();
 
         if (listOfFiles != null) {
             return listOfFiles.length;

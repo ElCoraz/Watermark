@@ -65,7 +65,7 @@ public class WatermarksController {
 
         watermark.ifPresent(value -> watermarkRepository.delete(value));
 
-        (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\watermarks\\" + id + ".png")).delete();
+        (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/watermarks/" + id + ".png")).delete();
 
         return "redirect:/watermark";
     }
@@ -75,12 +75,12 @@ public class WatermarksController {
     public String upload(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) throws IOException {
         String id = UUID.randomUUID().toString();
 
-        Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\watermarks\\" + id + ".png")).toPath());
+        Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/watermarks/" + id + ".png")).toPath());
 
         Watermark watermark = new Watermark();
 
         watermark.id = id;
-        watermark.url = (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\watermarks\\" + id + ".png";
+        watermark.url = (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/watermarks/" + id + ".png";
         watermark.name = name;
         watermark.uuid = id;
         watermark.value = "";

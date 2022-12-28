@@ -1,4 +1,4 @@
 {
-  "path":"\\src\\main\\resources\\static\\images\\",
-  "watermark":"\\src\\main\\resources\\static\\images\\watermarks\\"
+  "path":"/src/main/resources/static/images/",
+  "watermark":"/src/main/resources/static/images/watermarks/"
 }

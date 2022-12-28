@@ -114,7 +114,7 @@ public class ApiController {
     public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException {
         int count = 0;
 
-        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "\\images\\" + id)).listFiles();
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id)).listFiles();
 
         if (listOfFiles != null) {
             for (File file : listOfFiles) {
