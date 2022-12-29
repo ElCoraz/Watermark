@@ -148,7 +148,7 @@ public class ProductController {
 
         Files.delete(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id));
 
-        return "redirect:/product";
+        return "redirect:/product/" + id + "/1";
     }
 
     /******************************************************************************************************************/
