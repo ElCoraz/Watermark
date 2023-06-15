@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 /**********************************************************************************************************************/
 @RestController
 @RequestMapping(path = "/api")
@@ -109,6 +111,41 @@ public class ApiController {
     @PostMapping(path = "/count/{id}")
     public ResponseEntity<String> count(@PathVariable String id) throws JsonProcessingException {
         return Query.getResponseEntityQuery("count/" + id, HttpMethod.GET, null);
+    }
+    
+    /******************************************************************************************************************/
+    @GetMapping(path = "/info")
+    public ResponseEntity<String> info() throws IOException {
+        JSONArray jsonArray = new JSONArray();
+
+        File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/")).listFiles();
+
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("id", file.getName());
+
+                int count = 0;
+
+                File[] listOfFiles1 = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + file.getName())).listF>
+
+                if (listOfFiles1 != null) {
+                        for (File file1 : listOfFiles1) {
+                                if (file1.isFile() && (file1.getName().indexOf(".png") > 0)) {
+                                        count++;
+                                }
+                        }
+                }
+
+                jsonObject.put("count", count);
+
+                jsonArray.put(jsonObject);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(jsonArray.toString());
     }
 
     /******************************************************************************************************************/
