@@ -167,10 +167,19 @@ public class ProductController {
     private Integer getCount(String id) throws IOException {
         File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id)).listFiles();
 
-        if (listOfFiles != null) {
-            return listOfFiles.length;
-        }
+        int count = 0;
 
-        return 0;
+        if (listOfFiles != null) {
+            for (File file: listOfFiles) {
+                String name = file.getName();
+                int lastIndexOf = name.lastIndexOf(".");
+                if (lastIndexOf > 0) {
+                    if (name.substring(lastIndexOf).equals("png")) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
     }
 }
