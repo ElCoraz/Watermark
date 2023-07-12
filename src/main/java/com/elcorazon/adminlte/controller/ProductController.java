@@ -131,6 +131,10 @@ public class ProductController {
             Files.createDirectories(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id));
         }
 
+        if (file.isEmpty()) {
+            return "redirect:/product/" + id + "/1";
+        }
+
         Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id + "/" + (getCount(id) + 1) + ".png")).toPath());
 
         File localFile = new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id + "/" + (getCount(id) + 1) + ".png");
