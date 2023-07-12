@@ -20,12 +20,22 @@ public class Settings {
     private Environment environment;
 
     /******************************************************************************************************************/
+    public Settings() {
+        this.settings = new com.elcorazon.adminlte.model.Settings();
+    }
+
+    /******************************************************************************************************************/
     public Settings(Environment environment) throws IOException {
         this.environment = environment;
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         this.settings = objectMapper.readValue(new String(Files.readAllBytes(Paths.get(Objects.requireNonNull(this.environment.getProperty("settings.file.name")))), StandardCharsets.UTF_8), objectMapper.getTypeFactory().constructType(com.elcorazon.adminlte.model.Settings.class));
+    }
+
+    /******************************************************************************************************************/
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
     /******************************************************************************************************************/
@@ -129,5 +139,37 @@ public class Settings {
         settingsSave.bottom = bottom;
 
         (new ObjectMapper()).writeValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images/" + settings.uuid + "/settings.json").toFile(), settingsSave);
+    }
+
+    /******************************************************************************************************************/
+    public void save(String uuid) throws IOException {
+        SettingsSave settingsSave = new SettingsSave();
+
+        settingsSave.uuid = uuid;
+        settingsSave.name = "";
+        settingsSave.width = 600;
+        settingsSave.height = 600;
+        settingsSave.template = "";
+
+        LayerSave bottom = new LayerSave();
+
+        bottom.alpha = 0.5f;
+        bottom.height = 100;
+        bottom.scale = 50;
+        bottom.uuid = "";
+        bottom.width = 100;
+
+        LayerSave top = new LayerSave();
+
+        top.alpha = 0.5f;
+        top.height = 100;
+        top.scale = 50;
+        top.uuid = "";
+        top.width = 100;
+
+        settingsSave.top = top;
+        settingsSave.bottom = bottom;
+
+        (new ObjectMapper()).writeValue(Paths.get(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "images/" + uuid + "/settings.json").toFile(), settingsSave);
     }
 }

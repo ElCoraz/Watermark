@@ -25,6 +25,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -131,6 +132,12 @@ public class ProductController {
         }
 
         Files.copy(file.getInputStream(), (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id + "/" + (getCount(id) + 1) + ".png")).toPath());
+
+        File localFile = new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id + "/" + (getCount(id) + 1) + ".png");
+
+        if (localFile.length() == 0) {
+            localFile.delete();
+        }
 
         return "redirect:/product/" + id + "/1";
     }

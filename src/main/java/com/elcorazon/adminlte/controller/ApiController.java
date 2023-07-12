@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -129,7 +130,7 @@ public class ApiController {
 
                 int count = 0;
 
-                File[] listOfFiles1 = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + file.getName())).listF>
+                File[] listOfFiles1 = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + file.getName())).listFiles();
 
                 if (listOfFiles1 != null) {
                         for (File file1 : listOfFiles1) {
@@ -157,8 +158,12 @@ public class ApiController {
 
         if (listOfFiles != null) {
             for (File file : listOfFiles) {
-                if (file.isFile() && (file.getName().indexOf(".png") > 0)) {
+                if (file.isFile() && (file.getName().indexOf(".png") > 0) && (file.length() > 0)) {
                     count++;
+                }
+
+                if (file.length() == 0) {
+                    file.delete();
                 }
             }
         }
@@ -201,7 +206,13 @@ public class ApiController {
         try {
             settings = new com.elcorazon.adminlte.utils.Settings(environment).load(settings, index, watermarks_top, watermarks_bottom, true, true);
         } catch (Exception e) {
-            return image(new ByteArrayOutputStream(), type);
+            com.elcorazon.adminlte.utils.Settings newSettings = new com.elcorazon.adminlte.utils.Settings();
+
+            newSettings.setEnvironment(environment);
+
+            newSettings.save(id);
+
+            settings = newSettings.load(settings, index, watermarks_top, watermarks_bottom, true, true);
         }
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
