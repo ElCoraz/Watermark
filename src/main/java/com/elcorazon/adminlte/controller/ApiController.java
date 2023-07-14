@@ -23,10 +23,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.math.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 /**********************************************************************************************************************/
 @RestController
 @RequestMapping(path = "/api")
@@ -149,17 +155,38 @@ public class ApiController {
         return ResponseEntity.status(HttpStatus.OK).body(jsonArray.toString());
     }
 
+    private String getShaHASH(File file) throws NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+
+        byte[] messageDigest = md.digest(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+
+        BigInteger no = new BigInteger(1, messageDigest);
+
+        String hashtext = no.toString(16);
+
+        while (hashtext.length() < 32) {
+            hashtext = "0" + hashtext;
+        }
+
+        return hashtext;
+    }
+
     /******************************************************************************************************************/
-    @GetMapping(path = "/image/{id}")
-    public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException {
+    @GetMapping(path = "/image/{id}", produces="application/json")
+    public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException, NoSuchAlgorithmException {
         int count = 0;
 
+        JSONObject jsonObject = new JSONObject();
+
         File[] listOfFiles = (new File(Images.getPath() + (new com.elcorazon.adminlte.utils.Settings(environment).getPath()) + "/images/" + id)).listFiles();
+
+        JSONArray jsonArray = new JSONArray();
 
         if (listOfFiles != null) {
             for (File file : listOfFiles) {
                 if (file.isFile() && (file.getName().indexOf(".png") > 0) && (file.length() > 0)) {
                     count++;
+                    jsonArray.put(getShaHASH(file));
                 }
 
                 if (file.length() == 0) {
@@ -168,7 +195,10 @@ public class ApiController {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("{\"count\": " + count + " }");
+        jsonObject.put("hash", jsonArray);
+        jsonObject.put("count", count);
+
+        return ResponseEntity.status(HttpStatus.OK).body(jsonObject.toString());
     }
 
     /******************************************************************************************************************/
