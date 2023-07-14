@@ -11,6 +11,10 @@ import com.elcorazon.adminlte.utils.Images;
 import com.elcorazon.adminlte.utils.Query;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nonapi.io.github.classgraph.utils.FileUtils;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
@@ -19,20 +23,19 @@ import org.springframework.web.bind.annotation.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.security.Security;
+import java.security.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.math.*;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import org.apache.commons.codec.binary.Hex;
+
 /**********************************************************************************************************************/
 @RestController
 @RequestMapping(path = "/api")
@@ -155,25 +158,22 @@ public class ApiController {
         return ResponseEntity.status(HttpStatus.OK).body(jsonArray.toString());
     }
 
-    private String getShaHASH(File file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-
-        byte[] messageDigest = md.digest(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-
-        BigInteger no = new BigInteger(1, messageDigest);
-
-        String hashtext = no.toString(16);
-
-        while (hashtext.length() < 32) {
-            hashtext = "0" + hashtext;
+    public static String md5sum(File file) throws IOException {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException("Unable to compute md5sum for string", ex);
         }
-
-        return hashtext;
+        assert (digest != null);
+        digest.update(Files.readAllBytes(file.toPath()));
+        BigInteger hash = new BigInteger(1, digest.digest());
+        return (hash.toString(16));
     }
 
     /******************************************************************************************************************/
     @GetMapping(path = "/image/{id}", produces="application/json")
-    public ResponseEntity<String> propertyImage(@PathVariable String id) throws IOException, NoSuchAlgorithmException {
+    public ResponseEntity<String> propertyImage(@PathVariable String id) throws Exception {
         int count = 0;
 
         JSONObject jsonObject = new JSONObject();
@@ -186,7 +186,15 @@ public class ApiController {
             for (File file : listOfFiles) {
                 if (file.isFile() && (file.getName().indexOf(".png") > 0) && (file.length() > 0)) {
                     count++;
-                    jsonArray.put(getShaHASH(file));
+                    Process proc = Runtime.getRuntime().exec("md5sum -b " + file.getAbsolutePath());
+                    BufferedReader stdInput = new BufferedReader(new
+                            InputStreamReader(proc.getInputStream()));
+                    String s = null;
+                    String a = "";
+                    while ((s = stdInput.readLine()) != null) {
+                        a+=s;
+                    }
+                    jsonArray.put(a.replace(file.getAbsolutePath(), "").replace("*", "").trim());
                 }
 
                 if (file.length() == 0) {
